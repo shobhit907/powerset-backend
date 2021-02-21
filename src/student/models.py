@@ -6,14 +6,14 @@ class Students (models.Model):
     #user (FK)
     #institute (FK)
     isVerified = models.BooleanField(default=False)
-    entryNumber = models.CharField(max_length=50)
+    entryNumber = models.CharField(max_length=50, unique=True)
     branch = models.CharField(max_length=50)
     degree = models.CharField(max_length=50)
     motherName = models.CharField(max_length=50)
     fatherName = models.CharField(max_length=50)
     preferredProfile = models.CharField(blank=True)
     category = models.CharField(max_length=50)
-    technicalSkills = models.CharField(blank=True)
+    technicalSkills = models.TextField(blank=True)
     introduction = models.TextField(blank=True)
     careerPlans = mdoels.TextField(blank=True)
 
@@ -62,8 +62,8 @@ class WorkExperience (models.Model):
     location = models.CharField(max_length=50)
     starDate = models.DateField()
     endDate = models.DateField()
-    compensationMin = models.IntegerField()
-    compensationMax = models.IntegerField()
+    compensationMin = models.IntegerField(validators=[MinValueValidator(0)])
+    compensationMax = models.IntegerField(validators=[MinValueValidator(0)])
     description = models.TextField(blank=True)
 
 class Courses (models.Model):
@@ -95,14 +95,14 @@ class Documents (models.Model):
 
 class Semester (models.Model):
     student = models.ForeignKey(Students, on_delete = models.CASCADE)
-    semesterNumber = models.IntegerField()
-    sgpa = models.FloatField()
-    numberOfBacklogs = models.IntegerField()
+    semesterNumber = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(20)])
+    sgpa = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(10.0)])
+    numberOfBacklogs = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(100))
     gradeSheetLink = models.URLField()
 
 class Class (models.Model):
     student = models.ForeignKey(Students, on_delete = models.CASCADE)
-    number = models.IntegerField()
+    number = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(12))
     InstituteName = models.CharField(max_length=50)
     fromDate = models.DateField()
     toDate = models.DateField()
@@ -130,7 +130,7 @@ class ConferencesAndWorkshops (models.Model):
 class CommunicationLanguages (models.Model):
     student = models.ForeignKey(Students, on_delete = models.CASCADE)
     language = models.CharField(max_length=50)
-    proficiency = models.IntegerField()
+    proficiency = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5))
 
 class TestScores (models.Model):
     student = models.ForeignKey(Students, on_delete = models.CASCADE)
@@ -138,6 +138,6 @@ class TestScores (models.Model):
     description = models.TextField(blank=True)
     scoreFormat = models.CharField(choices=[('S', 'Score'), ('R', 'Rank'), ('P', 'Percentile')])
     score = models.FloatField()
-    total = models.FloatField()
+    total = models.FloatField(validators=[MinValueValidator(0.0)])
     examDate = models.DateField()
     #associatedWith = list of all academic intitutes of student
