@@ -32,6 +32,8 @@ DEBUG = False
 if os.getenv('DEBUG')=='True':
     DEBUG = True
 
+print(DEBUG)
+
 CORS_ALLOW_ALL_ORIGINS = True
 ALLOWED_HOSTS = ['*']
 
@@ -47,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'testapp',
+    'django_countries',
 ]
 
 MIDDLEWARE = [
