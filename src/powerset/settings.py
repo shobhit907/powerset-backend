@@ -47,8 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'testapp',
-    #'django_countries',
     'student',
+    'placement',
 ]
 
 MIDDLEWARE = [
