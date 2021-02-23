@@ -29,7 +29,7 @@ class Student (models.Model):
     career_plans = models.TextField(blank=True)
 
     def __str__(self):
-        return '%s' % self.entryNumber
+        return '%s' % self.entry_number
 
 
 class SocialProfile (models.Model):
@@ -41,7 +41,7 @@ class SocialProfile (models.Model):
     codeforces = models.URLField(blank=True)
 
     def __str__(self):
-        return '%s Social profiles' % self.student.entryNumber
+        return '%s Social profiles' % self.student.entry_number
 
 
 class Project (models.Model):
@@ -53,7 +53,7 @@ class Project (models.Model):
     description = models.TextField(blank=True)
 
     def __str__(self):
-        return '%s Project Title: %s' % (self.student.entryNumber, self.title)
+        return '%s Project Title: %s' % (self.student.entry_number, self.title)
 
 
 class Patent (models.Model):
@@ -67,7 +67,7 @@ class Patent (models.Model):
     filing_date = models.DateField()
 
     def __str__(self):
-        return '%s Patent Title: %s' % (self.student.entryNumber, self.title)
+        return '%s Patent Title: %s' % (self.student.entry_number, self.title)
 
 
 class Resume (models.Model):
@@ -77,7 +77,7 @@ class Resume (models.Model):
     is_latest = models.BooleanField(default=True)
 
     def __str__(self):
-        return '%s Resume: %s' % (self.student.entryNumber, self.number)
+        return '%s Resume: %s' % (self.student.entry_number, self.number)
 
 
 class AwardAndRecognition (models.Model):
@@ -89,25 +89,21 @@ class AwardAndRecognition (models.Model):
     # associatedWith = list of all academic intitutes of student
 
     def __str__(self):
-        return '%s Award or Recognition Title: %s' % (self.student.entryNumber, self.title)
-
-
-    def __str__(self):
-        return '%s Award or Recognition Title: %s' % (self.student.entryNumber, self.title)
+        return '%s Award or Recognition Title: %s' % (self.student.entry_number, self.title)
 
 class WorkExperience (models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='workExperience')
     job_title = models.CharField(max_length=50)
     company = models.CharField(max_length=50)
     location = models.CharField(max_length=50)
-    star_date = models.DateField()
+    start_date = models.DateField()
     end_date = models.DateField()
     compensation_min = models.IntegerField(validators=[MinValueValidator(0)])
     compensation_max = models.IntegerField(validators=[MinValueValidator(0)])
     description = models.TextField(blank=True)
 
     def __str__(self):
-        return '%s Work Experience Title: %s' % (self.student.entryNumber, self.jobTitle)
+        return '%s Work Experience Title: %s' % (self.student.entry_number, self.jobTitle)
 
 
 class Course (models.Model):
@@ -118,7 +114,7 @@ class Course (models.Model):
         'A', 'A'), ('A-', 'A-'), ('B', 'B'), ('B-', 'B-'), ('C', 'C'), ('C-', 'C-'), ('F', 'F')])
 
     def __str__(self):
-        return '%s Course Title: %s' % (self.student.entryNumber, self.title)
+        return '%s Course Title: %s' % (self.student.entry_number, self.title)
 
 
 class Competition (models.Model):
@@ -130,7 +126,7 @@ class Competition (models.Model):
     description = models.TextField(blank=True)
 
     def __str__(self):
-        return '%s Competition Title: %s' % (self.student.entryNumber, self.title)
+        return '%s Competition Title: %s' % (self.student.entry_number, self.title)
 
 
 class PositionsOfResponsibility (models.Model):
@@ -142,7 +138,7 @@ class PositionsOfResponsibility (models.Model):
     organization_name = models.CharField(max_length=50)
 
     def __str__(self):
-        return '%s Position of Responsibility Title: %s' % (self.student.entryNumber, self.title)
+        return '%s Position of Responsibility Title: %s' % (self.student.entry_number, self.title)
 
 
 class Document (models.Model):
@@ -151,7 +147,7 @@ class Document (models.Model):
     link = models.URLField()
 
     def __str__(self):
-        return '%s Document Name: %s' % (self.student.entryNumber, self.name)
+        return '%s Document Name: %s' % (self.student.entry_number, self.name)
 
 
 class Semester (models.Model):
@@ -165,7 +161,7 @@ class Semester (models.Model):
     grade_sheet_link = models.URLField()
 
     def __str__(self):
-        return '%s Semester Number: %s' % (self.student.entryNumber, self.number)
+        return '%s Semester Number: %s' % (self.student.entry_number, self.number)
 
 
 class Class (models.Model):
@@ -180,7 +176,7 @@ class Class (models.Model):
     stream = models.CharField(max_length=50)
 
     def __str__(self):
-        return '%s Class Number: %s' % (self.student.entryNumber, self.number)
+        return '%s Class Number: %s' % (self.student.entry_number, self.number)
 
 
 class Certification (models.Model):
@@ -194,7 +190,7 @@ class Certification (models.Model):
     description = models.TextField(blank=True)
 
     def __str__(self):
-        return '%s Certification Name: %s' % (self.student.entryNumber, self.name)
+        return '%s Certification Name: %s' % (self.student.entry_number, self.name)
 
 
 class ConferencesAndWorkshop (models.Model):
@@ -205,7 +201,7 @@ class ConferencesAndWorkshop (models.Model):
     address = models.TextField()
 
     def __str__(self):
-        return '%s Conference or Workshop Title: %s' % (self.student.entryNumber, self.title)
+        return '%s Conference or Workshop Title: %s' % (self.student.entry_number, self.title)
 
 
 class CommunicationLanguage (models.Model):
@@ -215,7 +211,7 @@ class CommunicationLanguage (models.Model):
         '3', 'Professional working proficiency'), ('4', 'Full professional working proficiency'), ('5', 'Native or bilingual proficiency')])
 
     def __str__(self):
-        return '%s Language Name: %s' % (self.student.entryNumber, self.language)
+        return '%s Language Name: %s' % (self.student.entry_number, self.language)
 
 
 class Exam (models.Model):
@@ -230,4 +226,4 @@ class Exam (models.Model):
     associated_with = models.CharField(max_length=200)
 
     def __str__(self):
-        return '%s Test Title: %s' % (self.student.entryNumber, self.title)
+        return '%s Test Title: %s' % (self.student.entry_number, self.title)
