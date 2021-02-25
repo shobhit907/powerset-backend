@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'testapp',
     'student',
     'placement',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
