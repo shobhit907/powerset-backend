@@ -9,6 +9,9 @@ class Institute(models.Model):
     name = models.CharField(max_length=200)
     logo = models.URLField(blank=True, null=True)
 
+    def __str__(self) -> str:
+        return self.name
+
 
 class Student (models.Model):
     user = models.OneToOneField(
@@ -33,7 +36,8 @@ class Student (models.Model):
 
 
 class SocialProfile (models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='socialProfile')
+    student = models.ForeignKey(
+        Student, on_delete=models.CASCADE, related_name='socialProfile')
     github = models.URLField(blank=True)
     facebook = models.URLField(blank=True)
     linkedin = models.URLField(blank=True)
@@ -45,7 +49,8 @@ class SocialProfile (models.Model):
 
 
 class Project (models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='project')
+    student = models.ForeignKey(
+        Student, on_delete=models.CASCADE, related_name='project')
     title = models.CharField(max_length=50)
     domain = models.CharField(max_length=50)
     start_date = models.DateField()
@@ -57,7 +62,8 @@ class Project (models.Model):
 
 
 class Patent (models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='patent')
+    student = models.ForeignKey(
+        Student, on_delete=models.CASCADE, related_name='patent')
     title = models.CharField(max_length=50)
     description = models.TextField(blank=True)
     office = models.CharField(max_length=20)
@@ -72,7 +78,8 @@ class Patent (models.Model):
 
 class Resume (models.Model):
     number = models.IntegerField(validators=[MinValueValidator(1)])
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='resume')
+    student = models.ForeignKey(
+        Student, on_delete=models.CASCADE, related_name='resume')
     link = models.URLField()
     is_latest = models.BooleanField(default=True)
 
@@ -81,7 +88,8 @@ class Resume (models.Model):
 
 
 class AwardAndRecognition (models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='awardAndRecognition')
+    student = models.ForeignKey(
+        Student, on_delete=models.CASCADE, related_name='awardAndRecognition')
     title = models.CharField(max_length=50)
     description = models.TextField(blank=True)
     issuer = models.CharField(max_length=50)
@@ -91,8 +99,10 @@ class AwardAndRecognition (models.Model):
     def __str__(self):
         return '%s Award or Recognition Title: %s' % (self.student.entry_number, self.title)
 
+
 class WorkExperience (models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='workExperience')
+    student = models.ForeignKey(
+        Student, on_delete=models.CASCADE, related_name='workExperience')
     job_title = models.CharField(max_length=50)
     company = models.CharField(max_length=50)
     location = models.CharField(max_length=50)
@@ -107,7 +117,8 @@ class WorkExperience (models.Model):
 
 
 class Course (models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='course')
+    student = models.ForeignKey(
+        Student, on_delete=models.CASCADE, related_name='course')
     code = models.CharField(max_length=50)
     title = models.CharField(max_length=50)
     grade_secured = models.CharField(max_length=2, choices=[(
@@ -118,7 +129,8 @@ class Course (models.Model):
 
 
 class Competition (models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='competition')
+    student = models.ForeignKey(
+        Student, on_delete=models.CASCADE, related_name='competition')
     title = models.CharField(max_length=50)
     position = models.CharField(max_length=50)
     associated_with = models.CharField(max_length=200)
@@ -130,7 +142,8 @@ class Competition (models.Model):
 
 
 class PositionsOfResponsibility (models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='positionsOfResponsibility')
+    student = models.ForeignKey(
+        Student, on_delete=models.CASCADE, related_name='positionsOfResponsibility')
     title = models.CharField(max_length=50)
     description = models.TextField(blank=True)
     from_date = models.DateField()
@@ -142,7 +155,8 @@ class PositionsOfResponsibility (models.Model):
 
 
 class Document (models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='document')
+    student = models.ForeignKey(
+        Student, on_delete=models.CASCADE, related_name='document')
     name = models.CharField(max_length=50)
     link = models.URLField()
 
@@ -151,7 +165,8 @@ class Document (models.Model):
 
 
 class Semester (models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='semester')
+    student = models.ForeignKey(
+        Student, on_delete=models.CASCADE, related_name='semester')
     number = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(20)])
     sgpa = models.FloatField(
@@ -165,7 +180,8 @@ class Semester (models.Model):
 
 
 class Class (models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='clas')
+    student = models.ForeignKey(
+        Student, on_delete=models.CASCADE, related_name='clas')
     number = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(12)])
     institute_name = models.CharField(max_length=50)
@@ -180,7 +196,8 @@ class Class (models.Model):
 
 
 class Certification (models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='certification')
+    student = models.ForeignKey(
+        Student, on_delete=models.CASCADE, related_name='certification')
     name = models.CharField(max_length=50)
     issuing_authority = models.CharField(max_length=50)
     link = models.URLField()
@@ -194,7 +211,8 @@ class Certification (models.Model):
 
 
 class ConferencesAndWorkshop (models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='conferenceAndWorkshop')
+    student = models.ForeignKey(
+        Student, on_delete=models.CASCADE, related_name='conferenceAndWorkshop')
     title = models.CharField(max_length=50)
     description = models.TextField(blank=True)
     organizer = models.CharField(max_length=50)
@@ -205,7 +223,8 @@ class ConferencesAndWorkshop (models.Model):
 
 
 class CommunicationLanguage (models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='communicationLanguage')
+    student = models.ForeignKey(
+        Student, on_delete=models.CASCADE, related_name='communicationLanguage')
     language = models.CharField(max_length=50)
     proficiency = models.CharField(max_length=20, choices=[('1', 'Elementary proficiency'), ('2', 'Limited working proficiency'), (
         '3', 'Professional working proficiency'), ('4', 'Full professional working proficiency'), ('5', 'Native or bilingual proficiency')])
@@ -215,7 +234,8 @@ class CommunicationLanguage (models.Model):
 
 
 class Exam (models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='exam')
+    student = models.ForeignKey(
+        Student, on_delete=models.CASCADE, related_name='exam')
     title = models.CharField(max_length=50)
     description = models.TextField(blank=True)
     score_format = models.CharField(max_length=20, choices=[(

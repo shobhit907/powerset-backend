@@ -34,5 +34,6 @@ def FormTestView (request):
     context = {
         'form': form,
     }
-
+    print(form)
+    print(type(form))
     return render(request, 'formTest.html', context)
