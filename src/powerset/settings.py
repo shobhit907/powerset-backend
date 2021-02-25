@@ -91,7 +91,9 @@ WSGI_APPLICATION = 'powerset.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-if DEBUG:
+USE_REMOTE_DB = os.getenv('USE_REMOTE_DB')
+
+if not USE_REMOTE_DB:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
