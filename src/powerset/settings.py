@@ -163,6 +163,9 @@ REST_FRAMEWORK = {
     ),
 }
 
+DOMAIN = 'powerset.netlify.com'
+SITE_NAME = 'Powerset'
+
 DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': 'auth/password/reset/confirm/{uid}/{token}',
     'USERNAME_RESET_CONFIRM_URL': 'auth/username/reset/confirm/{uid}/{token}',
