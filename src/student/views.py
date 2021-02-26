@@ -2,9 +2,11 @@ from django.shortcuts import render
 #from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework.decorators import APIView
-from .models import Student
-from .serializers import StudentSerializer
+from .models import *
+from .serializers import *
 from .forms import *
+from rest_framework.permissions import IsAuthenticated
+import json
 
 # Create your views here.
 class ApiTestView (APIView):
@@ -12,6 +14,34 @@ class ApiTestView (APIView):
         student = Student.objects.all()
         serializer = StudentSerializer(student, many=True)
         return Response(serializer.data)
+
+class ProjectsView (APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id):
+        if request.user.get_username() == 'admin@gmail.com':
+            projects = Project.objects.all()
+            serializer = ProjectSerializer(projects, many=True)
+            return Response(serializer.data)
+        else:
+            student = Student.objects.get(user=request.user)
+            if (student.id != id):
+                return Response('Unauthorized Access')
+            projects = Project.objects.filter(student=student)
+            serializer = ProjectSerializer(projects, many=True)
+            return Response(serializer.data)
+
+    def post(self, request, id):
+        student = Student.objects.get(user=request.user)
+        if (student.id != id):
+                return Response('Unauthorized Access')
+        projects = Project.objects.filter(student=student).delete()
+        for projectJson in request.data:
+            projectJson['student'] = student
+            project = Project(**projectJson)
+            project.save()
+        return Response('Done')
 
 def FormTestView (request):
 
