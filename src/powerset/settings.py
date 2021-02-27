@@ -163,7 +163,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-DOMAIN = 'powerset.netlify.com'
+DOMAIN = 'powerset.netlify.app'
 SITE_NAME = 'Powerset'
 
 DJOSER = {
