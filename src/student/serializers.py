@@ -13,7 +13,7 @@ class CourseSerializer (serializers.ModelSerializer):
         model = Course
         fields = '__all__'
 
-class AwardsAndRecognitionSerializer (serializers.ModelSerializer):
+class AwardAndRecognitionSerializer (serializers.ModelSerializer):
     class Meta:
         model = AwardAndRecognition
         fields = '__all__'

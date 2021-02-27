@@ -91,7 +91,7 @@ WSGI_APPLICATION = 'powerset.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-USE_REMOTE_DB = os.getenv('USE_REMOTE_DB')
+USE_REMOTE_DB = os.getenv('USE_REMOTE_DB') == 'True'
 
 if not USE_REMOTE_DB:
     DATABASES = {

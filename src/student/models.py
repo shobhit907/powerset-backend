@@ -32,7 +32,7 @@ class Student (models.Model):
     career_plans = models.TextField(blank=True)
 
     def __str__(self):
-        return '%s' % self.entry_number
+        return str(self.id)+' '+self.entry_number
 
 
 class SocialProfile (models.Model):
@@ -53,8 +53,8 @@ class Project (models.Model):
         Student, on_delete=models.CASCADE, related_name='project')
     title = models.CharField(max_length=50)
     domain = models.CharField(max_length=50)
-    start_date = models.DateField()
-    end_date = models.DateField()
+    start_date = models.DateField(blank=True)
+    end_date = models.DateField(blank=True)
     description = models.TextField(blank=True)
 
     def __str__(self):
