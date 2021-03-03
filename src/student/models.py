@@ -7,7 +7,7 @@ from django.conf import settings
 
 class Institute(models.Model):
     name = models.CharField(max_length=200)
-    logo = models.URLField(blank=True, null=True)
+    logo = models.FileField(blank=True, null=True, upload_to='logos')
 
     def __str__(self) -> str:
         return self.name
@@ -32,7 +32,7 @@ class Student (models.Model):
     career_plans = models.TextField(blank=True)
 
     def __str__(self):
-        return '%s' % self.entry_number
+        return str(self.id)+' '+self.entry_number
 
 
 class SocialProfile (models.Model):
@@ -53,8 +53,8 @@ class Project (models.Model):
         Student, on_delete=models.CASCADE, related_name='project')
     title = models.CharField(max_length=50)
     domain = models.CharField(max_length=50)
-    start_date = models.DateField()
-    end_date = models.DateField()
+    start_date = models.DateField(blank=True)
+    end_date = models.DateField(blank=True)
     description = models.TextField(blank=True)
 
     def __str__(self):
@@ -76,15 +76,19 @@ class Patent (models.Model):
         return '%s Patent Title: %s' % (self.student.entry_number, self.title)
 
 
+def get_resume_upload_path(instance, filename):
+    return "resumes/{userid}/{filename}".format(userid=instance.student.entry_number, filename=filename)
+
+
 class Resume (models.Model):
-    number = models.IntegerField(validators=[MinValueValidator(1)])
+    name = models.CharField(max_length=100)
     student = models.ForeignKey(
         Student, on_delete=models.CASCADE, related_name='resume')
-    link = models.URLField()
+    resume = models.FileField(upload_to=get_resume_upload_path, null=True)
     is_latest = models.BooleanField(default=True)
 
     def __str__(self):
-        return '%s Resume: %s' % (self.student.entry_number, self.number)
+        return '%s Resume: %s' % (self.student.entry_number, self.name)
 
 
 class AwardAndRecognition (models.Model):
@@ -154,14 +158,22 @@ class PositionsOfResponsibility (models.Model):
         return '%s Position of Responsibility Title: %s' % (self.student.entry_number, self.title)
 
 
+def get_document_upload_path(instance, filename):
+    return "documents/{userid}/{filename}".format(userid=instance.student.entry_number, filename=filename)
+
+
 class Document (models.Model):
     student = models.ForeignKey(
         Student, on_delete=models.CASCADE, related_name='document')
     name = models.CharField(max_length=50)
-    link = models.URLField()
+    document = models.FileField(upload_to=get_document_upload_path, null=True)
 
     def __str__(self):
         return '%s Document Name: %s' % (self.student.entry_number, self.name)
+
+
+def get_grade_sheet_upload_path(instance, filename):
+    return "grade_sheets/{userid}/{filename}".format(userid=instance.student.entry_number, filename=filename)
 
 
 class Semester (models.Model):
@@ -173,7 +185,8 @@ class Semester (models.Model):
         validators=[MinValueValidator(0.0), MaxValueValidator(10.0)])
     number_of_backlogs = models.IntegerField(
         validators=[MinValueValidator(0), MaxValueValidator(100)])
-    grade_sheet_link = models.URLField()
+    grade_sheet = models.FileField(
+        upload_to=get_grade_sheet_upload_path, null=True)
 
     def __str__(self):
         return '%s Semester Number: %s' % (self.student.entry_number, self.number)
