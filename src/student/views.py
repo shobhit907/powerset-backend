@@ -46,6 +46,7 @@ class SocialProfilesView (APIView):
             project.save()
         return Response('Done')
 
+
 class ProjectsView (APIView):
 
     permission_classes = [IsAuthenticated]
@@ -252,6 +253,7 @@ class CertificationView (APIView):
             certificationJson.save()
         return Response('Done')
 
+
 class PositionOfResponsibiltyView (APIView):
 
     permission_classes = [IsAuthenticated]
@@ -259,14 +261,17 @@ class PositionOfResponsibiltyView (APIView):
     def get(self, request, id):
         if request.user.get_username() == 'admin@gmail.com':
             positionOfResponsibility = PositionsOfResponsibility.objects.all()
-            serializer = PositionOfResponsibilitySerializer(positionOfResponsibility, many=True)
+            serializer = PositionsOfResponsibilitySerializer(
+                positionOfResponsibility, many=True)
             return Response(serializer.data)
         else:
             student = Student.objects.get(user=request.user)
             if ((not student) or student.id != id):
                 return Response('Unauthorized Access')
-            positionOfResponsibility = positionOfResponsibility.objects.filter(student=student)
-            serializer = PositionsOfResponsibilitySerializer(positionOfResponsibility, many=True)
+            positionOfResponsibility = PositionsOfResponsibility.objects.filter(
+                student=student)
+            serializer = PositionsOfResponsibilitySerializer(
+                positionOfResponsibility, many=True)
             return Response(serializer.data)
 
     def post(self, request, id):
@@ -276,9 +281,11 @@ class PositionOfResponsibiltyView (APIView):
         PositionsOfResponsibility.objects.filter(student=student).delete()
         for positionOfResponsibilityJson in request.data:
             positionOfResponsibilityJson['student'] = student
-            positionOfResponsibility = PositionOfResponsibility(**positionOfResponsibilityJson)
+            positionOfResponsibility = PositionsOfResponsibility(
+                **positionOfResponsibilityJson)
             positionOfResponsibility.save()
         return Response('Done')
+
 
 class SemesterView (APIView):
 
@@ -308,6 +315,7 @@ class SemesterView (APIView):
             semester.save()
         return Response('Done')
 
+
 class ClassView (APIView):
 
     permission_classes = [IsAuthenticated]
@@ -322,7 +330,7 @@ class ClassView (APIView):
             if ((not student) or student.id != id):
                 return Response('Unauthorized Access')
             classObject = Class.objects.filter(student=student)
-            serializer = ClassrSerializer(classObject, many=True)
+            serializer = ClassSerializer(classObject, many=True)
             return Response(serializer.data)
 
     def post(self, request, id):
@@ -336,6 +344,7 @@ class ClassView (APIView):
             classObject.save()
         return Response('Done')
 
+
 class ConferencesAndWorkshopView (APIView):
 
     permission_classes = [IsAuthenticated]
@@ -343,14 +352,17 @@ class ConferencesAndWorkshopView (APIView):
     def get(self, request, id):
         if request.user.get_username() == 'admin@gmail.com':
             conferencesAndWorkshops = ConferencesAndWorkshop.objects.all()
-            serializer = ConferencesAndWorkshopSerializer(conferencesAndWorkshops, many=True)
+            serializer = ConferencesAndWorkshopSerializer(
+                conferencesAndWorkshops, many=True)
             return Response(serializer.data)
         else:
             student = Student.objects.get(user=request.user)
             if ((not student) or student.id != id):
                 return Response('Unauthorized Access')
-            conferencesAndWorkshops = ConferencesAndWorkshop.objects.filter(student=student)
-            serializer = ConferencesAndWorkshopSerializer(conferencesAndWorkshops, many=True)
+            conferencesAndWorkshops = ConferencesAndWorkshop.objects.filter(
+                student=student)
+            serializer = ConferencesAndWorkshopSerializer(
+                conferencesAndWorkshops, many=True)
             return Response(serializer.data)
 
     def post(self, request, id):
@@ -360,9 +372,11 @@ class ConferencesAndWorkshopView (APIView):
         ConferencesAndWorkshop.objects.filter(student=student).delete()
         for conferencesAndWorkshopsJson in request.data:
             conferencesAndWorkshopsJson['student'] = student
-            conferencesAndWorkshops = ConferencesAndWorkshop(**conferencesAndWorkshopsJson)
+            conferencesAndWorkshops = ConferencesAndWorkshop(
+                **conferencesAndWorkshopsJson)
             conferencesAndWorkshops.save()
         return Response('Done')
+
 
 class CommunicationLanguageView (APIView):
 
@@ -371,14 +385,17 @@ class CommunicationLanguageView (APIView):
     def get(self, request, id):
         if request.user.get_username() == 'admin@gmail.com':
             communicationLanguages = CommunicationLanguage.objects.all()
-            serializer = CommunicationLanguageSerializer(communicationLanguages, many=True)
+            serializer = CommunicationLanguageSerializer(
+                communicationLanguages, many=True)
             return Response(serializer.data)
         else:
             student = Student.objects.get(user=request.user)
             if ((not student) or student.id != id):
                 return Response('Unauthorized Access')
-            communicationLanguages = CommunicationLanguage.objects.filter(student=student)
-            serializer = CommunicationLanguageSerializer(communicationLanguages, many=True)
+            communicationLanguages = CommunicationLanguage.objects.filter(
+                student=student)
+            serializer = CommunicationLanguageSerializer(
+                communicationLanguages, many=True)
             return Response(serializer.data)
 
     def post(self, request, id):
@@ -388,9 +405,11 @@ class CommunicationLanguageView (APIView):
         CommunicationLanguage.objects.filter(student=student).delete()
         for communicationLanguagesJson in request.data:
             communicationLanguagesJson['student'] = student
-            communicationLanguages = CommunicationLanguage(**communicationLanguagesJson)
+            communicationLanguages = CommunicationLanguage(
+                **communicationLanguagesJson)
             communicationLanguages.save()
         return Response('Done')
+
 
 class ExamView (APIView):
 
@@ -419,6 +438,9 @@ class ExamView (APIView):
             exams = Exam(**examsJson)
             exams.save()
         return Response('Done')
+
+
+
 
 def FormTestView(request):
 
