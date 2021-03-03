@@ -18,6 +18,34 @@ class ApiTestView (APIView):
         return Response(serializer.data)
 
 
+class SocialProfilesView (APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id):
+        if request.user.get_username() == 'admin@gmail.com':
+            socialProfiles = SocialProfile.objects.all()
+            serializer = ProjectSerializer(socialProfiles, many=True)
+            return Response(serializer.data)
+        else:
+            student = Student.objects.get(user=request.user)
+            if ((not student) or student.id != id):
+                return Response('Unauthorized Access')
+            socialProfile = SocialProfile.objects.get(student=student)
+            serializer = ProjectSerializer(socialProfile)
+            return Response(serializer.data)
+
+    def post(self, request, id):
+        student = Student.objects.get(user=request.user)
+        if (student.id != id):
+            return Response('Unauthorized Access')
+        Project.objects.filter(student=student).delete()
+        for projectJson in request.data:
+            projectJson['student'] = student
+            project = Project(**projectJson)
+            project.save()
+        return Response('Done')
+
 class ProjectsView (APIView):
 
     permission_classes = [IsAuthenticated]
@@ -224,6 +252,173 @@ class CertificationView (APIView):
             certificationJson.save()
         return Response('Done')
 
+class PositionOfResponsibiltyView (APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id):
+        if request.user.get_username() == 'admin@gmail.com':
+            positionOfResponsibility = PositionsOfResponsibility.objects.all()
+            serializer = PositionOfResponsibilitySerializer(positionOfResponsibility, many=True)
+            return Response(serializer.data)
+        else:
+            student = Student.objects.get(user=request.user)
+            if ((not student) or student.id != id):
+                return Response('Unauthorized Access')
+            positionOfResponsibility = positionOfResponsibility.objects.filter(student=student)
+            serializer = PositionsOfResponsibilitySerializer(positionOfResponsibility, many=True)
+            return Response(serializer.data)
+
+    def post(self, request, id):
+        student = Student.objects.get(user=request.user)
+        if (student.id != id):
+            return Response('Unauthorized Access')
+        PositionsOfResponsibility.objects.filter(student=student).delete()
+        for positionOfResponsibilityJson in request.data:
+            positionOfResponsibilityJson['student'] = student
+            positionOfResponsibility = PositionOfResponsibility(**positionOfResponsibilityJson)
+            positionOfResponsibility.save()
+        return Response('Done')
+
+class SemesterView (APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id):
+        if request.user.get_username() == 'admin@gmail.com':
+            semester = Semester.objects.all()
+            serializer = SemesterSerializer(semester, many=True)
+            return Response(serializer.data)
+        else:
+            student = Student.objects.get(user=request.user)
+            if ((not student) or student.id != id):
+                return Response('Unauthorized Access')
+            semester = Semester.objects.filter(student=student)
+            serializer = SemesterSerializer(semester, many=True)
+            return Response(serializer.data)
+
+    def post(self, request, id):
+        student = Student.objects.get(user=request.user)
+        if (student.id != id):
+            return Response('Unauthorized Access')
+        Semester.objects.filter(student=student).delete()
+        for semesterJson in request.data:
+            semesterJson['student'] = student
+            semester = Semester(**semesterJson)
+            semester.save()
+        return Response('Done')
+
+class ClassView (APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id):
+        if request.user.get_username() == 'admin@gmail.com':
+            classObject = Class.objects.all()
+            serializer = ClassSerializer(classObject, many=True)
+            return Response(serializer.data)
+        else:
+            student = Student.objects.get(user=request.user)
+            if ((not student) or student.id != id):
+                return Response('Unauthorized Access')
+            classObject = Class.objects.filter(student=student)
+            serializer = ClassrSerializer(classObject, many=True)
+            return Response(serializer.data)
+
+    def post(self, request, id):
+        student = Student.objects.get(user=request.user)
+        if (student.id != id):
+            return Response('Unauthorized Access')
+        Class.objects.filter(student=student).delete()
+        for classObjectJson in request.data:
+            classObjectJson['student'] = student
+            classObject = Class(**classObjectJson)
+            classObject.save()
+        return Response('Done')
+
+class ConferencesAndWorkshopView (APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id):
+        if request.user.get_username() == 'admin@gmail.com':
+            conferencesAndWorkshops = ConferencesAndWorkshop.objects.all()
+            serializer = ConferencesAndWorkshopSerializer(conferencesAndWorkshops, many=True)
+            return Response(serializer.data)
+        else:
+            student = Student.objects.get(user=request.user)
+            if ((not student) or student.id != id):
+                return Response('Unauthorized Access')
+            conferencesAndWorkshops = ConferencesAndWorkshop.objects.filter(student=student)
+            serializer = ConferencesAndWorkshopSerializer(conferencesAndWorkshops, many=True)
+            return Response(serializer.data)
+
+    def post(self, request, id):
+        student = Student.objects.get(user=request.user)
+        if (student.id != id):
+            return Response('Unauthorized Access')
+        ConferencesAndWorkshop.objects.filter(student=student).delete()
+        for conferencesAndWorkshopsJson in request.data:
+            conferencesAndWorkshopsJson['student'] = student
+            conferencesAndWorkshops = ConferencesAndWorkshop(**conferencesAndWorkshopsJson)
+            conferencesAndWorkshops.save()
+        return Response('Done')
+
+class CommunicationLanguageView (APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id):
+        if request.user.get_username() == 'admin@gmail.com':
+            communicationLanguages = CommunicationLanguage.objects.all()
+            serializer = CommunicationLanguageSerializer(communicationLanguages, many=True)
+            return Response(serializer.data)
+        else:
+            student = Student.objects.get(user=request.user)
+            if ((not student) or student.id != id):
+                return Response('Unauthorized Access')
+            communicationLanguages = CommunicationLanguage.objects.filter(student=student)
+            serializer = CommunicationLanguageSerializer(communicationLanguages, many=True)
+            return Response(serializer.data)
+
+    def post(self, request, id):
+        student = Student.objects.get(user=request.user)
+        if (student.id != id):
+            return Response('Unauthorized Access')
+        CommunicationLanguage.objects.filter(student=student).delete()
+        for communicationLanguagesJson in request.data:
+            communicationLanguagesJson['student'] = student
+            communicationLanguages = CommunicationLanguage(**communicationLanguagesJson)
+            communicationLanguages.save()
+        return Response('Done')
+
+class ExamView (APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id):
+        if request.user.get_username() == 'admin@gmail.com':
+            exams = Exam.objects.all()
+            serializer = ExamSerializer(exams, many=True)
+            return Response(serializer.data)
+        else:
+            student = Student.objects.get(user=request.user)
+            if ((not student) or student.id != id):
+                return Response('Unauthorized Access')
+            exams = Exam.objects.filter(student=student)
+            serializer = ExamSerializer(exams, many=True)
+            return Response(serializer.data)
+
+    def post(self, request, id):
+        student = Student.objects.get(user=request.user)
+        if (student.id != id):
+            return Response('Unauthorized Access')
+        Exam.objects.filter(student=student).delete()
+        for examsJson in request.data:
+            examsJson['student'] = student
+            exams = Exam(**examsJson)
+            exams.save()
+        return Response('Done')
 
 def FormTestView(request):
 
