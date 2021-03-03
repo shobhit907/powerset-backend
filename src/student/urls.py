@@ -16,6 +16,6 @@ urlpatterns = [
     path('<int:id>/awards-and-recognitions/', views.AwardAndRecognitionsView.as_view()),
     path('<int:id>/courses/', views.CourseView.as_view()),
     path('<int:id>/competitions/', views.CompetitionView.as_view()),
-    path('<int:id>/certifications/', views.Certification.as_view()),
+    path('<int:id>/certifications/', views.CertificationView.as_view()),
     
 ]
