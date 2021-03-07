@@ -1,17 +1,7 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.conf import settings
-
-# Create your models here.
-
-
-class Institute(models.Model):
-    name = models.CharField(max_length=200)
-    logo = models.FileField(blank=True, null=True, upload_to='logos')
-
-    def __str__(self) -> str:
-        return self.name
-
+from placement.models import Institute
 
 class Student (models.Model):
     user = models.OneToOneField(

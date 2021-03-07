@@ -1,8 +1,14 @@
 from django.db import models
-from student.models import *
 from django.conf import settings
 from django.utils import timezone
 # Create your models here.
+
+class Institute(models.Model):
+    name = models.CharField(max_length=200)
+    logo = models.FileField(blank=True, null=True, upload_to='logos')
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Company(models.Model):
@@ -28,7 +34,7 @@ class Placement(models.Model):
 
 class Coordinator(models.Model):
     student = models.ForeignKey(
-        Student, on_delete=models.CASCADE, related_name='placements_coordinator')
+        'student.Student', on_delete=models.CASCADE, related_name='placements_coordinator')
     placement = models.ForeignKey(
         Placement, on_delete=models.CASCADE, related_name='placements')
 
@@ -80,7 +86,7 @@ class JobApplicant(models.Model):
     job_profile = models.ForeignKey(
         JobProfile, on_delete=models.CASCADE, related_name='applicants')
     student = models.ForeignKey(
-        Student, on_delete=models.CASCADE, related_name='jobs_applied')
+        'student.Student', on_delete=models.CASCADE, related_name='jobs_applied')
     date_applied = models.DateField(auto_now=True, blank=True)
     is_selected = models.BooleanField(default=False)
     description = models.TextField(blank=True)

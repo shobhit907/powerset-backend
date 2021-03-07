@@ -1,11 +1,16 @@
+from typing import OrderedDict
+from django.http.response import HttpResponseNotFound
 from django.shortcuts import render
-#from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework.decorators import APIView
+from rest_framework import generics
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.serializers import Serializer
+from rest_framework import status
+
 from .models import *
 from .serializers import *
 from .forms import *
-from rest_framework.permissions import IsAuthenticated
 import json
 
 # Create your views here.
@@ -14,8 +19,50 @@ import json
 class ApiTestView (APIView):
     def get(self, request):
         student = Student.objects.all()
-        serializer = StudentSerializer(student, many=True)
+        serializer = StudentReadSerializer(student, many=True)
         return Response(serializer.data)
+
+
+class StudentSingleView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id):
+        student = Student.objects.filter(id=id).first()
+        if not student:
+            return HttpResponseNotFound(content='Not found')
+        serializer = StudentReadSerializer(student)
+        return Response(serializer.data)
+
+
+class StudentAllView(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated | IsAdminUser]
+    queryset = Student.objects.all()
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return StudentReadSerializer
+        elif self.action == 'create':
+            return StudentWriteSerializer
+        return super().get_serializer_class()
+
+    def list(self, request, *args, **kwargs):
+        self.action = 'list'
+        return super().list(request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        self.action = 'create'
+        data = OrderedDict()
+        data.update(request.data)
+        if 'institute' in data:
+            del data['institute']
+            data['institute'] = Institute.objects.filter(
+                name=request.data['institute']).first().id
+        data['user'] = request.user.id
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(StudentReadSerializer(Student.objects.filter(user=request.user).first()).data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 class SocialProfilesView (APIView):
@@ -438,8 +485,6 @@ class ExamView (APIView):
             exams = Exam(**examsJson)
             exams.save()
         return Response('Done')
-
-
 
 
 def FormTestView(request):
