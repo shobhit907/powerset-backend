@@ -14,6 +14,7 @@ urlpatterns = [
     path('<int:id>/patents/', views.PatentView.as_view()),
     path('<int:id>/work-experiences/', views.WorkExperienceView.as_view()),
     path('', views.StudentAllView.as_view()),
+    path('me/', views.StudentMeView.as_view()),
     path('<int:id>/', views.StudentSingleView.as_view()),
 
     path('<int:id>/awards-and-recognitions/',

@@ -13,8 +13,6 @@ class Institute(models.Model):
 
 
 class Company(models.Model):
-    user = models.OneToOneField(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='companies')
     name = models.CharField(max_length=100)
     logo = models.URLField(blank=True, null=True)
 
@@ -63,7 +61,7 @@ class JobProfile(models.Model):
     # To-do : add all branches options
     branches_eligible = models.CharField(
         max_length=50, choices=[('CSE', 'Computer Science & Engineering'), ('EE', 'Electrical Engineering'), ('ME', 'Mechanical Engineering'), ('CE', 'Civil Engineering'), ('MME', 'Metallurgical and Materials Engineering'), ('MNC', 'Mathematics & Computing'), ('CBME', 'Center for BioMedical Engineering'), ('HSS', 'Humanities and Social Sciences'), ('P', 'Physics'), ('C', 'Chemistry'), ('M', 'Mathematics')])
-    job_description = models.URLField(blank=True)
+    job_description = models.FileField(blank=True)
     salary_breakup = models.TextField(blank=True, null=True)
     gender_allowed = models.CharField(
         max_length=10, choices=[('M', 'Male'), ('F', 'Female'), ('B', 'Both')])

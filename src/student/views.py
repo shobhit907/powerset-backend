@@ -94,6 +94,15 @@ class StudentSingleView(APIView):
         serializer = StudentReadSerializer(student)
         return Response(serializer.data)
 
+class StudentMeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        student = Student.objects.filter(user=request.user).first()
+        if not student:
+            return HttpResponseNotFound(content='Not found')
+        serializer = StudentReadSerializer(student)
+        return Response(serializer.data)
 
 class StudentAllView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated | IsAdminUser]
