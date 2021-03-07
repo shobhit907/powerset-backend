@@ -19,14 +19,14 @@ class Student (models.Model):
     institute = models.ForeignKey(
         Institute, on_delete=models.CASCADE, related_name='students')
     is_verified = models.BooleanField(default=False)
-    entry_number = models.CharField(max_length=50, unique=True)
-    branch = models.CharField(max_length=50)
-    degree = models.CharField(max_length=50)
-    mother_name = models.CharField(max_length=50)
-    father_name = models.CharField(max_length=50)
+    entry_number = models.CharField(max_length=50, unique=True, null=False)
+    branch = models.CharField(max_length=50, null=False)
+    degree = models.CharField(max_length=50, null=False)
+    mother_name = models.CharField(max_length=50, null=False)
+    father_name = models.CharField(max_length=50, null=False)
     preferred_profile = models.CharField(max_length=50, blank=True)
     category = models.CharField(max_length=10, choices=[(
-        'GEN', 'General'), ('OBC', 'OBC'), ('SC', 'SC'), ('ST', 'ST')])
+        'GEN', 'General'), ('OBC', 'OBC'), ('SC', 'SC'), ('ST', 'ST')], null=False)
     technical_skills = models.TextField(blank=True)
     introduction = models.TextField(blank=True)
     career_plans = models.TextField(blank=True)
@@ -51,8 +51,8 @@ class SocialProfile (models.Model):
 class Project (models.Model):
     student = models.ForeignKey(
         Student, on_delete=models.CASCADE, related_name='project')
-    title = models.CharField(max_length=50)
-    domain = models.CharField(max_length=50)
+    title = models.CharField(max_length=50, null=False)
+    domain = models.CharField(max_length=50, null=False)
     start_date = models.DateField(blank=True)
     end_date = models.DateField(blank=True)
     description = models.TextField(blank=True)
@@ -64,12 +64,12 @@ class Project (models.Model):
 class Patent (models.Model):
     student = models.ForeignKey(
         Student, on_delete=models.CASCADE, related_name='patent')
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=50, null=False)
     description = models.TextField(blank=True)
-    office = models.CharField(max_length=20)
-    number = models.CharField(max_length=50)
+    office = models.CharField(max_length=20, null=False)
+    number = models.CharField(max_length=50, null=False)
     status = models.CharField(max_length=20, choices=[(
-        'P', 'Patent Pending'), ('I', 'Patent Issued')])
+        'P', 'Patent Pending'), ('I', 'Patent Issued')], null=False)
     filing_date = models.DateField()
 
     def __str__(self):
@@ -81,7 +81,7 @@ def get_resume_upload_path(instance, filename):
 
 
 class Resume (models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, null=False)
     student = models.ForeignKey(
         Student, on_delete=models.CASCADE, related_name='resume')
     resume = models.FileField(upload_to=get_resume_upload_path, null=True)
@@ -94,9 +94,9 @@ class Resume (models.Model):
 class AwardAndRecognition (models.Model):
     student = models.ForeignKey(
         Student, on_delete=models.CASCADE, related_name='awardAndRecognition')
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=50, null=False)
     description = models.TextField(blank=True)
-    issuer = models.CharField(max_length=50)
+    issuer = models.CharField(max_length=50, null=False)
     issue_date = models.DateField()
     # associatedWith = list of all academic intitutes of student
 
@@ -107,9 +107,9 @@ class AwardAndRecognition (models.Model):
 class WorkExperience (models.Model):
     student = models.ForeignKey(
         Student, on_delete=models.CASCADE, related_name='workExperience')
-    job_title = models.CharField(max_length=50)
-    company = models.CharField(max_length=50)
-    location = models.CharField(max_length=50)
+    job_title = models.CharField(max_length=50, null=False)
+    company = models.CharField(max_length=50, null=False)
+    location = models.CharField(max_length=50, null=False)
     start_date = models.DateField()
     end_date = models.DateField()
     compensation_min = models.IntegerField(validators=[MinValueValidator(0)])
@@ -117,27 +117,27 @@ class WorkExperience (models.Model):
     description = models.TextField(blank=True)
 
     def __str__(self):
-        return '%s Work Experience Title: %s' % (self.student.entry_number, self.jobTitle)
+        return '%s Work Experience Title: %s' % (self.student.entry_number, self.job_title)
 
 
 class Course (models.Model):
     student = models.ForeignKey(
         Student, on_delete=models.CASCADE, related_name='course')
-    code = models.CharField(max_length=50)
-    title = models.CharField(max_length=50)
+    code = models.CharField(max_length=50, null=False)
+    title = models.CharField(max_length=50, null=False)
     grade_secured = models.CharField(max_length=2, choices=[(
-        'A', 'A'), ('A-', 'A-'), ('B', 'B'), ('B-', 'B-'), ('C', 'C'), ('C-', 'C-'), ('F', 'F')])
+        'A', 'A'), ('A-', 'A-'), ('B', 'B'), ('B-', 'B-'), ('C', 'C'), ('C-', 'C-'), ('F', 'F')], null=False)
 
     def __str__(self):
-        return '%s Course Title: %s' % (self.student.entry_number, self.title)
+        return '%s Course Title: %s' % (self.student.entry_number, self.code)
 
 
 class Competition (models.Model):
     student = models.ForeignKey(
         Student, on_delete=models.CASCADE, related_name='competition')
-    title = models.CharField(max_length=50)
-    position = models.CharField(max_length=50)
-    associated_with = models.CharField(max_length=200)
+    title = models.CharField(max_length=50, null=False)
+    position = models.CharField(max_length=50, null=False)
+    associated_with = models.CharField(max_length=200, null=False)
     date = models.DateField()
     description = models.TextField(blank=True)
 
@@ -148,11 +148,11 @@ class Competition (models.Model):
 class PositionsOfResponsibility (models.Model):
     student = models.ForeignKey(
         Student, on_delete=models.CASCADE, related_name='positionsOfResponsibility')
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=50, null=False)
     description = models.TextField(blank=True)
     from_date = models.DateField()
     to_date = models.DateField()
-    organization_name = models.CharField(max_length=50)
+    organization_name = models.CharField(max_length=50, null=False)
 
     def __str__(self):
         return '%s Position of Responsibility Title: %s' % (self.student.entry_number, self.title)
@@ -197,11 +197,11 @@ class Class (models.Model):
         Student, on_delete=models.CASCADE, related_name='clas')
     number = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(12)])
-    institute_name = models.CharField(max_length=50)
+    institute_name = models.CharField(max_length=50, null=False)
     from_date = models.DateField()
     to_date = models.DateField()
     score = models.FloatField()
-    board = models.CharField(max_length=50)
+    board = models.CharField(max_length=50, null=False)
     stream = models.CharField(max_length=50)
 
     def __str__(self):
@@ -211,9 +211,9 @@ class Class (models.Model):
 class Certification (models.Model):
     student = models.ForeignKey(
         Student, on_delete=models.CASCADE, related_name='certification')
-    name = models.CharField(max_length=50)
-    issuing_authority = models.CharField(max_length=50)
-    link = models.URLField()
+    name = models.CharField(max_length=50, null=False)
+    issuing_authority = models.CharField(max_length=50, null=False)
+    link = models.URLField(null=False)
     date = models.DateField()
     license_number = models.CharField(max_length=50)
     has_expiry = models.BooleanField(default=False)
@@ -226,9 +226,9 @@ class Certification (models.Model):
 class ConferencesAndWorkshop (models.Model):
     student = models.ForeignKey(
         Student, on_delete=models.CASCADE, related_name='conferenceAndWorkshop')
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=50, null=False)
     description = models.TextField(blank=True)
-    organizer = models.CharField(max_length=50)
+    organizer = models.CharField(max_length=50, null=False)
     address = models.TextField()
 
     def __str__(self):
@@ -238,9 +238,9 @@ class ConferencesAndWorkshop (models.Model):
 class CommunicationLanguage (models.Model):
     student = models.ForeignKey(
         Student, on_delete=models.CASCADE, related_name='communicationLanguage')
-    language = models.CharField(max_length=50)
+    language = models.CharField(max_length=50, null=False)
     proficiency = models.CharField(max_length=20, choices=[('1', 'Elementary proficiency'), ('2', 'Limited working proficiency'), (
-        '3', 'Professional working proficiency'), ('4', 'Full professional working proficiency'), ('5', 'Native or bilingual proficiency')])
+        '3', 'Professional working proficiency'), ('4', 'Full professional working proficiency'), ('5', 'Native or bilingual proficiency')], null=False)
 
     def __str__(self):
         return '%s Language Name: %s' % (self.student.entry_number, self.language)
@@ -249,14 +249,14 @@ class CommunicationLanguage (models.Model):
 class Exam (models.Model):
     student = models.ForeignKey(
         Student, on_delete=models.CASCADE, related_name='exam')
-    title = models.CharField(max_length=50)
+    title = models.CharField(max_length=50, null=False)
     description = models.TextField(blank=True)
     score_format = models.CharField(max_length=20, choices=[(
-        'S', 'Score'), ('R', 'Rank'), ('P', 'Percentile')])
+        'S', 'Score'), ('R', 'Rank'), ('P', 'Percentile')], null=False)
     score = models.FloatField()
     total = models.FloatField(validators=[MinValueValidator(0.0)])
     exam_date = models.DateField()
-    associated_with = models.CharField(max_length=200)
+    associated_with = models.CharField(max_length=200, null=False)
 
     def __str__(self):
         return '%s Test Title: %s' % (self.student.entry_number, self.title)
