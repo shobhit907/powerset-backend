@@ -23,6 +23,67 @@ class ApiTestView (APIView):
         return Response(serializer.data)
 
 
+class ResumeView (APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id):
+        if request.user.get_username() == 'admin@gmail.com':
+            resumes = Resume.objects.all()
+            serializer = ResumeSerializer(resumes, many=True)
+            return Response(serializer.data)
+        else:
+            student = Student.objects.get(user=request.user)
+            if ((not student) or student.id != id):
+                return Response('Unauthorized Access')
+            resumes = Resume.objects.filter(student=student)
+            serializer = ResumeSerializer(resumes, many=True)
+            return Response(serializer.data)
+
+    def post(self, request, id):
+        student = Student.objects.get(user=request.user)
+        if (student.id != id):
+            return Response('Unauthorized Access')
+        resumeDict = {}
+        resumeDict['name'] = request.data['name']
+        resumeDict['is_latest'] = request.data['is_latest']
+        resumeDict['resume'] = request.data['file']
+        resumeDict['student'] = student
+        resume = Resume(**resumeDict)
+        resume.save()
+        return Response('Done')
+
+
+class DocumentView (APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id):
+        if request.user.get_username() == 'admin@gmail.com':
+            documents = Document.objects.all()
+            serializer = DocumentSerializer(documents, many=True)
+            return Response(serializer.data)
+        else:
+            student = Student.objects.get(user=request.user)
+            if ((not student) or student.id != id):
+                return Response('Unauthorized Access')
+            documents = Document.objects.filter(student=student)
+            serializer = DocumentSerializer(documents, many=True)
+            return Response(serializer.data)
+
+    def post(self, request, id):
+        student = Student.objects.get(user=request.user)
+        if (student.id != id):
+            return Response('Unauthorized Access')
+        documentDict = {}
+        documentDict['name'] = request.data['name']
+        documentDict['document'] = request.data['file']
+        documentDict['student'] = student
+        document = Document(**documentDict)
+        document.save()
+        return Response('Done')
+
+
 class StudentSingleView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -72,29 +133,39 @@ class SocialProfilesView (APIView):
     def get(self, request, id):
         if request.user.get_username() == 'admin@gmail.com':
             socialProfiles = SocialProfile.objects.all()
-            serializer = ProjectSerializer(socialProfiles, many=True)
+            serializer = SocialProfileSerializer(socialProfiles, many=True)
             return Response(serializer.data)
         else:
             student = Student.objects.get(user=request.user)
             if ((not student) or student.id != id):
                 return Response('Unauthorized Access')
-            socialProfile = SocialProfile.objects.get(student=student)
-            serializer = ProjectSerializer(socialProfile)
+            try:
+                socialProfile = SocialProfile.objects.get(student=student)
+            except SocialProfile.DoesNotExist:
+                socialProfile = None
+            if (socialProfile == None):
+                return Response("No Social Profile found")
+            serializer = SocialProfileSerializer(socialProfile)
             return Response(serializer.data)
 
     def post(self, request, id):
         student = Student.objects.get(user=request.user)
         if (student.id != id):
             return Response('Unauthorized Access')
-        Project.objects.filter(student=student).delete()
-        for projectJson in request.data:
-            projectJson['student'] = student
-            project = Project(**projectJson)
-            project.save()
+        try:
+            socialProfile = SocialProfile.objects.get(student=student)
+        except SocialProfile.DoesNotExist:
+            socialProfile = None
+        if (socialProfile != None):
+            socialProfile.delete()
+        socialProfilesJson = request.data[0]
+        socialProfilesJson['student'] = student
+        socialProfiles = SocialProfile(**socialProfilesJson)
+        socialProfiles.save()
         return Response('Done')
 
 
-class ProjectsView (APIView):
+class ProjectView (APIView):
 
     permission_classes = [IsAuthenticated]
 
@@ -123,7 +194,7 @@ class ProjectsView (APIView):
         return Response('Done')
 
 
-class PatentsView (APIView):
+class PatentView (APIView):
 
     permission_classes = [IsAuthenticated]
 
@@ -152,7 +223,7 @@ class PatentsView (APIView):
         return Response('Done')
 
 
-class AwardAndRecognitionsView (APIView):
+class AwardAndRecognitionView (APIView):
 
     permission_classes = [IsAuthenticated]
 
@@ -355,10 +426,29 @@ class SemesterView (APIView):
         student = Student.objects.get(user=request.user)
         if (student.id != id):
             return Response('Unauthorized Access')
-        Semester.objects.filter(student=student).delete()
-        for semesterJson in request.data:
-            semesterJson['student'] = student
-            semester = Semester(**semesterJson)
+        semesterDict = {}
+        semesterDict['number'] = request.data['number']
+        semesterDict['sgpa'] = request.data['sgpa']
+        semesterDict['number_of_backlogs'] = request.data['number_of_backlogs']
+        semesterDict['grade_sheet'] = request.data.get('file')
+        semesterDict['student'] = student
+        if (semesterDict.get('grade_sheet') == None):
+            print("HERE")
+            semester = Semester.objects.get(
+                student=student, number=semesterDict['number'])
+            semester.sgpa = semesterDict['sgpa']
+            semester.number_of_backlogs = semesterDict['number_of_backlogs']
+            semester.save()
+        else:
+            print("THERE")
+            try:
+                semester = Semester.objects.get(
+                    student=student, number=semesterDict['number'])
+            except Semester.DoesNotExist:
+                semester = None
+            if (semester != None):
+                semester.delete()
+            semester = Semester(**semesterDict)
             semester.save()
         return Response('Done')
 

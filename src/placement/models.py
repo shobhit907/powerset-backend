@@ -3,6 +3,7 @@ from django.conf import settings
 from django.utils import timezone
 # Create your models here.
 
+
 class Institute(models.Model):
     name = models.CharField(max_length=200)
     logo = models.FileField(blank=True, null=True, upload_to='logos')
