@@ -17,7 +17,7 @@ class Company(models.Model):
     logo = models.URLField(blank=True, null=True)
 
     def __str__(self) -> str:
-        return self.company_name
+        return self.name
 
 
 class Placement(models.Model):
@@ -28,7 +28,7 @@ class Placement(models.Model):
     name = models.CharField(max_length=200)
 
     def __str__(self) -> str:
-        return self.institute.name
+        return self.institute.name+", "+self.name
 
 
 class Coordinator(models.Model):
