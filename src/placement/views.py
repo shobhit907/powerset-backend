@@ -42,10 +42,7 @@ class JobProfileView (APIView):
 
     def post(self, request):
         student = Student.objects.filter(user=request.user).first()
-        try:
-            coordinator = Coordinator.objects.get(student=student)
-        except Coordinator.DoesNotExist:
-            coordinator = None
+        coordinator = Coordinator.objects.filter(student=student).first()
         if (coordinator == None):
             return Response("Please log in as a coordinator to use this functionality")
         # JobProfile.objects.all().delete()
