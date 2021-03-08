@@ -42,13 +42,13 @@ class JobProfileView (APIView):
 
     def post(self, request):
         student = Student.objects.filter(user=request.user).first()
-        coordinator = Coordinator.objects.filter(student=student).first()
-        if (coordinator == None):
+        coordinator = Coordinator.objects.filter(student=student,placement=Placement.objects.filter(name=request.data['placement']).first()).first()
+        if not coordinator:
             return Response("Please log in as a coordinator to use this functionality")
         # JobProfile.objects.all().delete()
-        for jobProfileJson in request.data:
-            jobProfileJson['company'] = Company.objects.filter(name=jobProfileJson['company']).first()
-            jobProfileJson['placement'] = Placement.objects.filter(name=jobProfileJson['placement']).first()
-            jobProfile = JobProfile(**jobProfileJson)
-            jobProfile.save()
+        jobProfileJson=request.data
+        jobProfileJson['company'] = Company.objects.filter(name=jobProfileJson['company']).first()
+        jobProfileJson['placement'] = Placement.objects.filter(name=jobProfileJson['placement']).first()
+        jobProfile = JobProfile(**jobProfileJson)
+        jobProfile.save()
         return Response('Done')
