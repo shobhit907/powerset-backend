@@ -44,14 +44,13 @@ class ResumeView (APIView):
         student = Student.objects.get(user=request.user)
         if (student.id != id):
             return Response('Unauthorized Access')
-        resumeDict = {}
-        resumeDict['name'] = request.data['name']
-        resumeDict['is_latest'] = request.data['is_latest']
-        resumeDict['resume'] = request.data['file']
-        resumeDict['student'] = student
-        resume = Resume(**resumeDict)
-        resume.save()
-        return Response('Done')
+        resumeDict = OrderedDict()
+        resumeDict.update(request.data)
+        resumeDict['student']=student.id
+        serialzer = ResumeSerializer(data=resumeDict)
+        serialzer.is_valid(raise_exception=True)
+        serialzer.save()
+        return Response(serialzer.data,status.HTTP_201_CREATED)
 
 
 class DocumentView (APIView):
@@ -75,14 +74,13 @@ class DocumentView (APIView):
         student = Student.objects.get(user=request.user)
         if (student.id != id):
             return Response('Unauthorized Access')
-        documentDict = {}
-        documentDict['name'] = request.data['name']
-        documentDict['document'] = request.data['file']
-        documentDict['student'] = student
-        document = Document(**documentDict)
-        document.save()
-        return Response('Done')
-
+        documentDict = OrderedDict()
+        documentDict.update(request.data)
+        documentDict['student']=student.id
+        serialzer = DocumentSerializer(data=documentDict)
+        serialzer.is_valid(raise_exception=True)
+        serialzer.save()
+        return Response(serialzer.data,status.HTTP_201_CREATED)
 
 class StudentSingleView(APIView):
     permission_classes = [IsAuthenticated]
