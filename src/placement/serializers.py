@@ -30,6 +30,7 @@ class JobProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = JobProfile
         fields = '__all__'
+        depth = 1
 
 
 class JobRoundSerializer(serializers.ModelSerializer):
