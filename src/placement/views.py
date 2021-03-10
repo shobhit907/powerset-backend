@@ -2,13 +2,15 @@ from django.http.response import HttpResponseNotFound
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import generics
-from rest_framework.decorators import APIView
-from rest_framework.serializers import Serializer
+from rest_framework import status
+from rest_framework.views import APIView
 from .models import *
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated
 from student.models import Student
 import json
+from collections import OrderedDict
+
 
 class InstituteAllView(generics.ListCreateAPIView):
     queryset = Institute.objects.all()
@@ -16,7 +18,7 @@ class InstituteAllView(generics.ListCreateAPIView):
 
 
 class InstituteSingleView(APIView):
-    
+
     def get(self, request, id):
         insitute = Institute.objects.filter(id=id).first()
         if not insitute:
@@ -24,31 +26,33 @@ class InstituteSingleView(APIView):
         serializer = InstituteSerializer(insitute)
         return Response(serializer.data)
 
+
 class JobProfileView (APIView):
 
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        # student = Student.objects.filter(user=request.user).first()
-        # try:
-        #     coordinator = Coordinator.objects.get(student=student)
-        # except Coordinator.DoesNotExist:
-        #     coordinator = None
-        # if (coordinator == None):
-        #     return Response("Please log in as a coordinator to use this functionality")
         jobProfiles = JobProfile.objects.all()
         serializer = JobProfileSerializer(jobProfiles, many=True)
         return Response(serializer.data)
 
     def post(self, request):
         student = Student.objects.filter(user=request.user).first()
-        coordinator = Coordinator.objects.filter(student=student,placement=Placement.objects.filter(name=request.data['placement']).first()).first()
+        coordinator = Coordinator.objects.filter(student=student, placement=Placement.objects.filter(
+            name=request.data['placement']).first()).first()
         if not coordinator:
             return Response("Please log in as a coordinator to use this functionality")
-        # JobProfile.objects.all().delete()
-        jobProfileJson=request.data
-        jobProfileJson['company'] = Company.objects.filter(name=jobProfileJson['company']).first()
-        jobProfileJson['placement'] = Placement.objects.filter(name=jobProfileJson['placement']).first()
-        jobProfile = JobProfile(**jobProfileJson)
-        jobProfile.save()
-        return Response('Done')
+        data = OrderedDict()
+        data.update(request.data)
+        data.pop('company')
+        data.pop('placement')
+        data['company'] = Company.objects.filter(
+            name=request.data['company']).first().id
+        data['placement'] = Placement.objects.filter(
+            name=request.data['placement']).first().id
+        # print(data)
+        serializer = JobProfileSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        # print(serializer.errors)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
