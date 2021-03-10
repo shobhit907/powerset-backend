@@ -55,7 +55,7 @@ class JobProfile(models.Model):
     description = models.TextField()
     min_ctc = models.FloatField()
     max_ctc = models.FloatField()
-    start_date = models.DateField(default=timezone.now, blank=True)
+    start_date = models.DateField(default=timezone.localdate, blank=True)
     end_date = models.DateField(blank=True)
     max_backlogs = models.IntegerField(default=0, blank=True)
     # To-do : add all branches options
