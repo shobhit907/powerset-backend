@@ -26,11 +26,18 @@ class CoordinatorSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class JobProfileSerializer(serializers.ModelSerializer):
+class JobProfileReadSerializer(serializers.ModelSerializer):
     class Meta:
         model = JobProfile
         fields = '__all__'
         depth = 1
+        
+
+class JobProfileWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JobProfile
+        fields = '__all__'
+        
 
 
 class JobRoundSerializer(serializers.ModelSerializer):

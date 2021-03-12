@@ -33,7 +33,7 @@ class JobProfileView (APIView):
 
     def get(self, request):
         jobProfiles = JobProfile.objects.all()
-        serializer = JobProfileSerializer(jobProfiles, many=True)
+        serializer = JobProfileReadSerializer(jobProfiles, many=True)
         return Response(serializer.data)
 
     def post(self, request):
@@ -44,15 +44,13 @@ class JobProfileView (APIView):
             return Response("Please log in as a coordinator to use this functionality")
         data = OrderedDict()
         data.update(request.data)
+        company_id = Company.objects.filter(name=request.data['company']).first().id
+        placement_id = Placement.objects.filter(name=request.data['placement']).first().id
         data.pop('company')
         data.pop('placement')
-        data['company'] = Company.objects.filter(
-            name=request.data['company']).first().id
-        data['placement'] = Placement.objects.filter(
-            name=request.data['placement']).first().id
-        # print(data)
-        serializer = JobProfileSerializer(data=data)
+        data['company'] = company_id
+        data['placement'] = placement_id
+        serializer = JobProfileWriteSerializer(data=data)
         serializer.is_valid(raise_exception=True)
-        # print(serializer.errors)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
