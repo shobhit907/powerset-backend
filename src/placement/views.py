@@ -7,10 +7,9 @@ from rest_framework.views import APIView
 from .models import *
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated
-from student.models import Student
+from student.models import Student, Semester
 import json
 from collections import OrderedDict
-
 
 class InstituteAllView(generics.ListCreateAPIView):
     queryset = Institute.objects.all()
@@ -77,7 +76,17 @@ class JobProfileView (APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        jobProfiles = JobProfile.objects.all()
+        try:
+            student = Student.objects.get(user=request.user)
+        except Student.DoesNotExist:
+            student = None
+        if (student == None):
+            return Response ("Please login as a valid student to see the jobs")
+        noOfBacklogs=0
+        semesters = Semester.objects.filter(student=student)
+        for semester in semesters:
+            noOfBacklogs += semester.number_of_backlogs
+        jobProfiles = JobProfile.objects.filter(min_cgpa__lte=student.cgpa, max_backlogs__gte=noOfBacklogs, gender_allowed__in=['B', student.gender])
         serializer = JobProfileReadSerializer(jobProfiles, many=True)
         return Response(serializer.data)
 

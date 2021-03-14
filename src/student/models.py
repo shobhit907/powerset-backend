@@ -10,8 +10,12 @@ class Student (models.Model):
         Institute, on_delete=models.CASCADE, related_name='students')
     is_verified = models.BooleanField(default=False)
     entry_number = models.CharField(max_length=50, unique=True, null=False)
+    gender = models.CharField(default='M',
+        max_length=10, choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Other')])
     branch = models.CharField(max_length=50, null=False)
     degree = models.CharField(max_length=50, null=False)
+    cgpa = models.FloatField(default=0.0,
+        validators=[MinValueValidator(0.0), MaxValueValidator(10.0)])
     mother_name = models.CharField(max_length=50, null=False)
     father_name = models.CharField(max_length=50, null=False)
     preferred_profile = models.CharField(max_length=50, blank=True)
