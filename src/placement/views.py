@@ -26,6 +26,16 @@ class InstituteSingleView(APIView):
         serializer = InstituteSerializer(insitute)
         return Response(serializer.data)
 
+class JobApplicantsView (APIView):
+
+    def get(self, request, id):
+        try:
+            jobProfile = JobProfile.objects.get(id=id)
+        except JobProfile.DoesNotExist:
+            return Response("Job profile with given id does not exist")
+        jobApplicants = JobApplicant.objects.filter(job_profile=jobProfile)
+        serializer = JobApplicantSerializer(jobApplicants, many=True)
+        return Response(serializer.data)
 
 class JobsApply (APIView):
 
