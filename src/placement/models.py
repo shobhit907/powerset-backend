@@ -16,6 +16,8 @@ branch_choices = (('CSE', 'Computer Science & Engineering'),
                   ('C', 'Chemistry'),
                   ('M', 'Mathematics'))
 
+gender_choices = [('M', 'Male'), ('F', 'Female'), ('O', 'Others')]
+
 class Institute(models.Model):
     name = models.CharField(max_length=200)
     logo = models.FileField(blank=True, null=True, upload_to='logos')
@@ -35,8 +37,8 @@ class Company(models.Model):
 class Placement(models.Model):
     institute = models.ForeignKey(
         Institute, related_name='placements', on_delete=models.CASCADE)
-    start_date = models.DateField(default=timezone.now, blank=True)
-    end_date = models.DateField(blank=True)
+    start_date = models.DateField(default=timezone.localdate, blank=True)
+    end_date = models.DateField(blank=True,null=True)
     name = models.CharField(max_length=200)
 
     def __str__(self) -> str:
@@ -56,26 +58,31 @@ class Coordinator(models.Model):
         return self.student.user.name + ', ' + self.placement.name
 
 
+def get_job_description_path(instance, filename):
+    return "job_descriptions/{placement_name}/{company_name}/{filename}".format(placement_name=instance.placement.name, company_name=instance.company.name, filename=filename)
+
+
 class JobProfile(models.Model):
+
     company = models.ForeignKey(
         Company, on_delete=models.CASCADE, related_name='job_profiles')
     placement = models.ForeignKey(
         Placement, on_delete=models.CASCADE, related_name='job_profiles')
     title = models.CharField(max_length=200)
-    domain = models.CharField(max_length=200, blank=True)
+    domain = models.CharField(max_length=200, blank=True,null=True)
     min_cgpa = models.FloatField(default=0.0, blank=True)
     description = models.TextField()
     min_ctc = models.FloatField()
     max_ctc = models.FloatField()
     start_date = models.DateField(default=timezone.localdate, blank=True)
-    end_date = models.DateField(blank=True)
+    end_date = models.DateField(blank=True,null=True)
     max_backlogs = models.IntegerField(default=0, blank=True)
     # To-do : add all branches options
     branches_eligible = MultiSelectField(choices=branch_choices)
-    job_description = models.FileField(blank=True)
+    job_description = models.FileField(
+        upload_to=get_job_description_path, blank=True,null=True)
     salary_breakup = models.TextField(blank=True, null=True)
-    gender_allowed = models.CharField(
-        max_length=10, choices=[('M', 'Male'), ('F', 'Female'), ('B', 'Both')])
+    gender_allowed = MultiSelectField(choices=gender_choices)
     extra_data = models.TextField(blank=True, null=True)
 
     def __str__(self) -> str:
@@ -86,7 +93,7 @@ class JobRound(models.Model):
     round_no = models.IntegerField(default=0)
     job_profile = models.ForeignKey(
         JobProfile, on_delete=models.CASCADE, related_name='rounds')
-    description = models.TextField(blank=True)
+    description = models.TextField(blank=True,null=True)
 
     def __str__(self) -> str:
         return self.job_profile.title+', '+str(self.round_no)
@@ -99,7 +106,7 @@ class JobApplicant(models.Model):
         'student.Student', on_delete=models.CASCADE, related_name='jobs_applied')
     date_applied = models.DateField(auto_now=True, blank=True)
     is_selected = models.BooleanField(default=False)
-    description = models.TextField(blank=True)
+    description = models.TextField(blank=True,null=True)
     job_round = models.ForeignKey(
         JobRound, on_delete=models.CASCADE, related_name='applicants')
 

@@ -1,7 +1,7 @@
 from django.db.models import fields
-from rest_framework import serializers
-import rest_framework
+from rest_framework import serializers, fields
 from .models import *
+
 
 class InstituteSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,11 +32,12 @@ class JobProfileReadSerializer(serializers.ModelSerializer):
         model = JobProfile
         fields = '__all__'
         depth = 1
-        
+
 
 class JobProfileWriteSerializer(serializers.ModelSerializer):
 
-    branches_eligible = rest_framework.fields.MultipleChoiceField(choices=branch_choices)
+    branches_eligible = fields.MultipleChoiceField(choices=branch_choices)
+    gender_allowed = fields.MultipleChoiceField(choices=gender_choices)
 
     class Meta:
         model = JobProfile

@@ -11,6 +11,7 @@ from student.models import Student, Semester
 import json
 from collections import OrderedDict
 
+
 class InstituteAllView(generics.ListCreateAPIView):
     queryset = Institute.objects.all()
     serializer_class = InstituteSerializer
@@ -19,11 +20,12 @@ class InstituteAllView(generics.ListCreateAPIView):
 class InstituteSingleView(APIView):
 
     def get(self, request, id):
-        insitute = Institute.objects.filter(id=id).first()
-        if not insitute:
+        institute = Institute.objects.filter(id=id).first()
+        if not institute:
             return HttpResponseNotFound()
-        serializer = InstituteSerializer(insitute)
+        serializer = InstituteSerializer(institute)
         return Response(serializer.data)
+
 
 class JobApplicantsView (APIView):
 
@@ -36,6 +38,7 @@ class JobApplicantsView (APIView):
         serializer = JobApplicantSerializer(jobApplicants, many=True)
         return Response(serializer.data)
 
+
 class JobsApply (APIView):
 
     permission_classes = [IsAuthenticated]
@@ -46,7 +49,7 @@ class JobsApply (APIView):
         except Student.DoesNotExist:
             student = None
         if (student == None):
-            return Response ("Please login as a valid student to apply")
+            return Response("Please login as a valid student to apply")
         for jobProfileJson in request.data:
             try:
                 jobProfile = JobProfile.objects.get(id=jobProfileJson['id'])
@@ -55,21 +58,24 @@ class JobsApply (APIView):
             if (jobProfile == None):
                 return Response("Invalid job profile")
             jobRounds = JobRound.objects.filter(job_profile=jobProfile)
-            if (len(jobRounds)==0):
+            if (len(jobRounds) == 0):
                 jobRound = JobRound(round_no=0, job_profile=jobProfile)
                 jobRound.save()
             jobRounds = JobRound.objects.filter(job_profile=jobProfile)
             for jobRound in jobRounds:
                 try:
-                    jobApplicant = JobApplicant.objects.get(student=student, job_profile=jobProfile, job_round=jobRound)
+                    jobApplicant = JobApplicant.objects.get(
+                        student=student, job_profile=jobProfile, job_round=jobRound)
                 except JobApplicant.DoesNotExist:
                     jobApplicant = None
                 if (jobApplicant != None):
                     break
             if (jobApplicant == None):
-                jobApplicant = JobApplicant(student=student, job_profile=jobProfile, job_round=jobRound)           
+                jobApplicant = JobApplicant(
+                    student=student, job_profile=jobProfile, job_round=jobRound)
                 jobApplicant.save()
         return Response("Done")
+
 
 class JobProfileView (APIView):
 
@@ -81,12 +87,13 @@ class JobProfileView (APIView):
         except Student.DoesNotExist:
             student = None
         if (student == None):
-            return Response ("Please login as a valid student to see the jobs")
-        noOfBacklogs=0
+            return Response("Please login as a valid student to see the jobs")
+        noOfBacklogs = 0
         semesters = Semester.objects.filter(student=student)
         for semester in semesters:
             noOfBacklogs += semester.number_of_backlogs
-        jobProfiles = JobProfile.objects.filter(min_cgpa__lte=student.cgpa, max_backlogs__gte=noOfBacklogs, gender_allowed__in=['B', student.gender])
+        jobProfiles = JobProfile.objects.filter(
+            min_cgpa__lte=student.cgpa, max_backlogs__gte=noOfBacklogs, gender_allowed__in=['B', student.gender])
         serializer = JobProfileReadSerializer(jobProfiles, many=True)
         return Response(serializer.data)
 
@@ -96,15 +103,21 @@ class JobProfileView (APIView):
             name=request.data['placement']).first()).first()
         if not coordinator:
             return Response("Please log in as a coordinator to use this functionality")
-        print(request.data['branches_eligible'])
         data = OrderedDict()
         data.update(request.data)
-        company_id = Company.objects.filter(name=request.data['company']).first().id
-        placement_id = Placement.objects.filter(name=request.data['placement']).first().id
+        company_id = Company.objects.filter(
+            name=request.data['company']).first().id
+        placement_id = Placement.objects.filter(
+            name=request.data['placement']).first().id
         data.pop('company')
         data.pop('placement')
+        data.pop('branches_eligible')
+        data.pop('gender_allowed')
         data['company'] = company_id
         data['placement'] = placement_id
+        data['branches_eligible'] = json.loads(
+            request.data['branches_eligible'])
+        data['gender_allowed'] = json.loads(request.data['gender_allowed'])
         serializer = JobProfileWriteSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
