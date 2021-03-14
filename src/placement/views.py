@@ -42,6 +42,7 @@ class JobProfileView (APIView):
             name=request.data['placement']).first()).first()
         if not coordinator:
             return Response("Please log in as a coordinator to use this functionality")
+        print(request.data['branches_eligible'])
         data = OrderedDict()
         data.update(request.data)
         company_id = Company.objects.filter(name=request.data['company']).first().id

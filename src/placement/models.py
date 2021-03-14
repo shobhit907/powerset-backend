@@ -1,8 +1,20 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from multiselectfield import MultiSelectField
 # Create your models here.
 
+branch_choices = (('CSE', 'Computer Science & Engineering'),
+                  ('EE', 'Electrical Engineering'),
+                  ('ME', 'Mechanical Engineering'),
+                  ('CE', 'Civil Engineering'),
+                  ('MME', 'Metallurgical and Materials Engineering'),
+                  ('MNC', 'Mathematics & Computing'),
+                  ('CBME', 'Center for BioMedical Engineering'),
+                  ('HSS', 'Humanities and Social Sciences'),
+                  ('P', 'Physics'),
+                  ('C', 'Chemistry'),
+                  ('M', 'Mathematics'))
 
 class Institute(models.Model):
     name = models.CharField(max_length=200)
@@ -59,8 +71,7 @@ class JobProfile(models.Model):
     end_date = models.DateField(blank=True)
     max_backlogs = models.IntegerField(default=0, blank=True)
     # To-do : add all branches options
-    branches_eligible = models.CharField(
-        max_length=50, choices=[('CSE', 'Computer Science & Engineering'), ('EE', 'Electrical Engineering'), ('ME', 'Mechanical Engineering'), ('CE', 'Civil Engineering'), ('MME', 'Metallurgical and Materials Engineering'), ('MNC', 'Mathematics & Computing'), ('CBME', 'Center for BioMedical Engineering'), ('HSS', 'Humanities and Social Sciences'), ('P', 'Physics'), ('C', 'Chemistry'), ('M', 'Mathematics')])
+    branches_eligible = MultiSelectField(choices=branch_choices)
     job_description = models.FileField(blank=True)
     salary_breakup = models.TextField(blank=True, null=True)
     gender_allowed = models.CharField(
