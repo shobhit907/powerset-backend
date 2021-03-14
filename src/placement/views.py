@@ -27,6 +27,41 @@ class InstituteSingleView(APIView):
         return Response(serializer.data)
 
 
+class JobsApply (APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            student = Student.objects.get(user=request.user)
+        except Student.DoesNotExist:
+            student = None
+        if (student == None):
+            return Response ("Please login as a valid student to apply")
+        for jobProfileJson in request.data:
+            try:
+                jobProfile = JobProfile.objects.get(id=jobProfileJson['id'])
+            except JobProfile.DoesNotExist:
+                jobProfile = None
+            if (jobProfile == None):
+                return Response("Invalid job profile")
+            jobRounds = JobRound.objects.filter(job_profile=jobProfile)
+            if (len(jobRounds)==0):
+                jobRound = JobRound(round_no=0, job_profile=jobProfile)
+                jobRound.save()
+            jobRounds = JobRound.objects.filter(job_profile=jobProfile)
+            for jobRound in jobRounds:
+                try:
+                    jobApplicant = JobApplicant.objects.get(student=student, job_profile=jobProfile, job_round=jobRound)
+                except JobApplicant.DoesNotExist:
+                    jobApplicant = None
+                if (jobApplicant != None):
+                    break
+            if (jobApplicant == None):
+                jobApplicant = JobApplicant(student=student, job_profile=jobProfile, job_round=jobRound)           
+                jobApplicant.save()
+        return Response("Done")
+
 class JobProfileView (APIView):
 
     permission_classes = [IsAuthenticated]

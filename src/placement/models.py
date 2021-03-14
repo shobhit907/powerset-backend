@@ -104,4 +104,4 @@ class JobApplicant(models.Model):
         JobRound, on_delete=models.CASCADE, related_name='applicants')
 
     def __str__(self) -> str:
-        return self.job_profile.title + ', '+self.student.user.name+', '+str(self.job_round.round_no)
+        return self.job_profile.title + ', '+self.student.entry_number+', '+str(self.job_round.round_no)
