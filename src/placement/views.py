@@ -93,7 +93,7 @@ class JobProfileView (APIView):
         for semester in semesters:
             noOfBacklogs += semester.number_of_backlogs
         jobProfiles = JobProfile.objects.filter(
-            min_cgpa__lte=student.cgpa, max_backlogs__gte=noOfBacklogs, gender_allowed__in=['B', student.gender])
+            min_cgpa__lte=student.cgpa, max_backlogs__gte=noOfBacklogs, gender_allowed__contains=student.gender)
         serializer = JobProfileReadSerializer(jobProfiles, many=True)
         return Response(serializer.data)
 
