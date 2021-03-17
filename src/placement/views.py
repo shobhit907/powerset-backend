@@ -38,7 +38,7 @@ class JobApplicantsView (APIView):
         serializer = JobApplicantSerializer(jobApplicants, many=True)
         return Response(serializer.data)
 
-class JobsCancelApplication (APIView):
+class CancelJobsApplication (APIView):
 
     permission_classes = [IsAuthenticated]
 

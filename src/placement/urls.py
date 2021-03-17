@@ -8,5 +8,5 @@ urlpatterns = [
     path('job-profiles/<int:id>/applicants', views.JobApplicantsView.as_view()),
     path('job-profiles/', views.JobProfileView.as_view()),
     path('apply/', views.JobsApply.as_view()),
-    path('cancel/', views.JobsCancelApplication.as_view()),
+    path('cancel/', views.CancelJobsApplication.as_view()),
 ]
