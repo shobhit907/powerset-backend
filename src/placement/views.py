@@ -38,6 +38,26 @@ class JobApplicantsView (APIView):
         serializer = JobApplicantSerializer(jobApplicants, many=True)
         return Response(serializer.data)
 
+class JobsCancelApplication (APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            student = Student.objects.get(user=request.user)
+        except Student.DoesNotExist:
+            student = None
+        if (student == None):
+            return Response("Please login as a valid student to cancel your application")
+        for jobProfileJson in request.data:
+            try:
+                jobProfile = JobProfile.objects.get(id=jobProfileJson['id'])
+            except JobProfile.DoesNotExist:
+                jobProfile = None
+            if (jobProfile == None):
+                return Response("Invalid job profile")
+            JobApplicant.objects.filter(student=student, job_profile=jobProfile).delete()
+        return Response("Done")
 
 class JobsApply (APIView):
 
