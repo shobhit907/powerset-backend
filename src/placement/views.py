@@ -26,7 +26,7 @@ class InstituteSingleView(APIView):
         serializer = InstituteSerializer(institute)
         return Response(serializer.data)
 
-
+#Security concern - Visible to any one
 class JobApplicantsView (APIView):
 
     def get(self, request, id):
