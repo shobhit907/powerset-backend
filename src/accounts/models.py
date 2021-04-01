@@ -3,7 +3,6 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.core.validators import MinLengthValidator
 
-
 class UserManager(BaseUserManager):
     """Define a model manager for User model with no username field."""
 

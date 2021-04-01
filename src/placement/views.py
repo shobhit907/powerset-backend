@@ -8,9 +8,11 @@ from .models import *
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated
 from student.models import Student, Semester
+from accounts.models import User
 import json
 from collections import OrderedDict
-
+from django.core.mail import send_mail
+import os
 
 class InstituteAllView(generics.ListCreateAPIView):
     queryset = Institute.objects.all()
@@ -96,6 +98,47 @@ class JobsApply (APIView):
                 jobApplicant.save()
         return Response("Done")
 
+def GetNumberOfBacklogs(student):
+    noOfBacklogs = 0
+    semesters = Semester.objects.filter(student=student)
+    for semester in semesters:
+        noOfBacklogs += semester.number_of_backlogs
+    return noOfBacklogs
+
+def SendEmailToEligibleStudents(id):
+    #Get job profile from job id
+    try:
+        jobProfile = JobProfile.objects.get(id=id)
+    except JobProfile.DoesNotExist:
+        return
+
+    print(jobProfile.gender_allowed)
+    #Get list of eligible students
+    eligibleStudents = Student.objects.filter(cgpa__gte=jobProfile.min_cgpa, gender__in=jobProfile.gender_allowed)
+
+    for student in eligibleStudents:
+        print(student.id)
+
+    return
+    #filtering students based on their backlogs
+    uneligibleIds = []
+    for student in eligibleStudents:
+        noOfBacklogs = GetNumberOfBacklogs(student)                 #Calculate backlogs
+        if (noOfBacklogs > jobProfile.max_backlogs):
+            uneligibleIds.append(student.id)
+    eligibleStudents.filter(id__in=uneligibleIds).delete()
+
+    print(uneligibleIds)
+
+    recepients = []
+    for student in eligibleStudents:
+        recepients.append(student.user.email)
+
+    print(recepients)
+
+    subject = 'New Job opening'
+    message = 'Hello\n\nYou are eligible for a new job. Please make sure to apply for the same before the deadline\n\nRegards\nPowerset team'
+    send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
 
 class JobProfileView (APIView):
 
@@ -108,10 +151,7 @@ class JobProfileView (APIView):
             student = None
         if (student == None):
             return Response("Please login as a valid student to see the jobs")
-        noOfBacklogs = 0
-        semesters = Semester.objects.filter(student=student)
-        for semester in semesters:
-            noOfBacklogs += semester.number_of_backlogs
+        noOfBacklogs = GetNumberOfBacklogs(student)
         jobProfiles = JobProfile.objects.filter(
             min_cgpa__lte=student.cgpa, max_backlogs__gte=noOfBacklogs, gender_allowed__contains=student.gender)
         serializer = JobProfileReadSerializer(jobProfiles, many=True)
@@ -140,5 +180,6 @@ class JobProfileView (APIView):
         data['gender_allowed'] = json.loads(request.data['gender_allowed'])
         serializer = JobProfileWriteSerializer(data=data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        jobProfile = serializer.save()
+        SendEmailToEligibleStudents(jobProfile.id)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
