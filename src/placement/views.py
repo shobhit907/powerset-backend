@@ -13,6 +13,7 @@ import json
 from collections import OrderedDict
 from django.core.mail import send_mail
 import os
+from .utils import *
 
 class InstituteAllView(generics.ListCreateAPIView):
     queryset = Institute.objects.all()
@@ -44,7 +45,7 @@ class CancelJobsApplication (APIView):
 
     permission_classes = [IsAuthenticated]
 
-    def post(self, request):
+    def delete(self, request):
         try:
             student = Student.objects.get(user=request.user)
         except Student.DoesNotExist:
@@ -98,48 +99,6 @@ class JobsApply (APIView):
                 jobApplicant.save()
         return Response("Done")
 
-def GetNumberOfBacklogs(student):
-    noOfBacklogs = 0
-    semesters = Semester.objects.filter(student=student)
-    for semester in semesters:
-        noOfBacklogs += semester.number_of_backlogs
-    return noOfBacklogs
-
-def SendEmailToEligibleStudents(id):
-    #Get job profile from job id
-    try:
-        jobProfile = JobProfile.objects.get(id=id)
-    except JobProfile.DoesNotExist:
-        return
-
-    print(jobProfile.gender_allowed)
-    #Get list of eligible students
-    eligibleStudents = Student.objects.filter(cgpa__gte=jobProfile.min_cgpa, gender__in=jobProfile.gender_allowed)
-
-    for student in eligibleStudents:
-        print(student.id)
-
-    return
-    #filtering students based on their backlogs
-    uneligibleIds = []
-    for student in eligibleStudents:
-        noOfBacklogs = GetNumberOfBacklogs(student)                 #Calculate backlogs
-        if (noOfBacklogs > jobProfile.max_backlogs):
-            uneligibleIds.append(student.id)
-    eligibleStudents.filter(id__in=uneligibleIds).delete()
-
-    print(uneligibleIds)
-
-    recepients = []
-    for student in eligibleStudents:
-        recepients.append(student.user.email)
-
-    print(recepients)
-
-    subject = 'New Job opening'
-    message = 'Hello\n\nYou are eligible for a new job. Please make sure to apply for the same before the deadline\n\nRegards\nPowerset team'
-    send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
-
 class JobProfileView (APIView):
 
     permission_classes = [IsAuthenticated]
@@ -181,5 +140,5 @@ class JobProfileView (APIView):
         serializer = JobProfileWriteSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         jobProfile = serializer.save()
-        SendEmailToEligibleStudents(jobProfile.id)
+        SendEmailToEligibleStudents(jobProfile)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
