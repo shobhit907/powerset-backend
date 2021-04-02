@@ -99,11 +99,34 @@ class StudentSingleView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, id):
+        student = Student.objects.filter(user=request.user).first()
+        coordinator = Coordinator.objects.filter(student=student).first()
+        if not coordinator and (not student or student.id != id):
+            return Response("Unauthorized access")
         student = Student.objects.filter(id=id).first()
         if not student:
             return HttpResponseNotFound(content='Not found')
         serializer = StudentReadSerializer(student)
         return Response(serializer.data)
+
+    def put(self, request, id):
+        student = Student.objects.filter(user=request.user).first()
+        coordinator = Coordinator.objects.filter(student=student).first()
+        if not coordinator and (not student or student.id != id):
+            return Response("Unauthorized access")
+
+        try:
+            student = Student.objects.get(id=id)
+        except Student.DoesNotExist:
+            student = None
+            return Response("Student with given id does not exist")
+
+        serializer = StudentWriteSerializer(student, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response("Done", status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class StudentMeView(APIView):
     permission_classes = [IsAuthenticated]

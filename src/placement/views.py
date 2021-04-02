@@ -29,7 +29,6 @@ class InstituteSingleView(APIView):
         serializer = InstituteSerializer(institute)
         return Response(serializer.data)
 
-#Security concern - Visible to any one
 class JobApplicantsView (APIView):
 
     def get(self, request, id):
@@ -37,6 +36,10 @@ class JobApplicantsView (APIView):
             jobProfile = JobProfile.objects.get(id=id)
         except JobProfile.DoesNotExist:
             return Response("Job profile with given id does not exist")
+        student = Student.objects.filter(user=request.user).first()
+        coordinator = Coordinator.objects.filter(student=student, placement=jobProfile.placement).first()
+        if not coordinator:
+            return Response("Please log in as a coordinator to use this functionality")
         jobApplicants = JobApplicant.objects.filter(job_profile=jobProfile)
         serializer = JobApplicantSerializer(jobApplicants, many=True)
         return Response(serializer.data)
@@ -142,3 +145,46 @@ class JobProfileView (APIView):
         jobProfile = serializer.save()
         SendEmailToEligibleStudents(jobProfile)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class AppliedJobsView (APIView):
+    def get(self, request):
+        try:
+            student = Student.objects.get(user=request.user)
+        except Student.DoesNotExist:
+            student = None
+        if (student == None):
+            return Response("Please login as a valid student to see the jobs in which you have applied")
+        jobApplications = JobApplicant.objects.filter(student=student)
+        jobIds = []
+        for j in jobApplications:
+            jobIds.append(j.job_profile.id)
+        appliedJobs = JobProfile.objects.filter(id__in=jobIds)
+        serializer = JobProfileReadSerializer(appliedJobs, many=True)
+        return Response(serializer.data)
+
+#Incomplete as of now
+class UpdateApplicantRound (APIView):
+    def put (self, request):
+        try:
+            jobProfile = JobProfile.objects.get(id=request.data['job_id'])
+        except JobProfile.DoesNotExist:
+            return Response("Job profile with given id does not exist")
+        student = Student.objects.filter(user=request.user).first()
+        coordinator = Coordinator.objects.filter(student=student, placement=jobProfile.placement).first()
+        if not coordinator:
+            return Response("Please log in as a coordinator to use this functionality")
+        try:
+            student = Student.objects.get(id=request.data['student_id'])
+        except Student.DoesNotExist:
+            student = None
+            return Response("Invalid student id")
+        try:
+            jobApplicant = JobApplicant.objects.get(student=student, job_profile=jobProfile)
+        except:
+            jobApplicant = None
+            return Response("Given student has not applied to the given job")
+        currentRound = jobApplicant.job_round.round_no
+        try:
+            newRound = JobRound.objects.get(round_no=currentRound, job_profile=jobProfile)
+        except JobRound.DoesNotExist:
+            return Response("The candidate was already in the last round. So he is selected")
