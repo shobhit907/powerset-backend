@@ -1,28 +1,15 @@
 from django.db.models import fields
 from rest_framework import serializers
 from accounts.serializers import *
-from placement.serializers import *
 from .models import *
 
 # Create your serializers here.
 JSON_ALLOWED_OBJECTS = (dict, list, tuple, str, int, bool)
 
-
-class StudentReadSerializer (serializers.ModelSerializer):
-    institute = InstituteSerializer()
-    user = UserSerializer()
-
-    class Meta:
-        model = Student
-        fields = ('id','entry_number', 'is_verified', 'branch', 'institute', 'user', 'degree', 'mother_name',
-                  'father_name', 'preferred_profile', 'category', 'technical_skills', 'introduction', 'career_plans')
-
-
 class StudentWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
         fields = '__all__'
-
 
 class CourseSerializer (serializers.ModelSerializer):
     class Meta:

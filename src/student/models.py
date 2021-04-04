@@ -8,12 +8,13 @@ class Student (models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='students')
     institute = models.ForeignKey(
         Institute, on_delete=models.CASCADE, related_name='students')
-    is_verified = models.BooleanField(default=False)
+    is_verified = models.CharField(max_length= 1, default='U', choices=[('U', 'Unverified'), ('V', 'Verified'), ('R', 'Rejected')])
     entry_number = models.CharField(max_length=50, unique=True, null=False)
     gender = models.CharField(default='M',
         max_length=10, choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Other')])
     branch = models.CharField(max_length=50, null=False)
     degree = models.CharField(max_length=50, null=False)
+    batch = models.IntegerField(validators=[MinValueValidator(2000)], default=2020)
     cgpa = models.FloatField(default=0.0,
         validators=[MinValueValidator(0.0), MaxValueValidator(10.0)])
     mother_name = models.CharField(max_length=50, null=False)
@@ -24,6 +25,7 @@ class Student (models.Model):
     technical_skills = models.TextField(blank=True)
     introduction = models.TextField(blank=True)
     career_plans = models.TextField(blank=True)
+    is_selected = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.id)+' '+self.entry_number

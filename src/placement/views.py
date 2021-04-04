@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.views import APIView
 from .models import *
 from .serializers import *
+from serializers_common import JobApplicantSerializer
 from rest_framework.permissions import IsAuthenticated
 from student.models import Student, Semester
 from accounts.models import User

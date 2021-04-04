@@ -2,7 +2,6 @@ from django.db.models import fields
 from rest_framework import serializers, fields
 from .models import *
 
-
 class InstituteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Institute
@@ -26,13 +25,12 @@ class CoordinatorSerializer(serializers.ModelSerializer):
         model = Coordinator
         fields = '__all__'
 
-
 class JobProfileReadSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = JobProfile
         fields = '__all__'
         depth = 1
-
 
 class JobProfileWriteSerializer(serializers.ModelSerializer):
 
@@ -47,10 +45,4 @@ class JobProfileWriteSerializer(serializers.ModelSerializer):
 class JobRoundSerializer(serializers.ModelSerializer):
     class Meta:
         model = JobRound
-        fields = '__all__'
-
-
-class JobApplicantSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = JobApplicant
         fields = '__all__'
