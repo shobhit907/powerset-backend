@@ -62,5 +62,6 @@ class WorkExperienceVerify (APIView):
         workExperiences = WorkExperience.objects.filter(student=student)
         for workExperience in workExperiences:
             workExperience.is_verified = request.data['is_verified']
+            workExperience.verification_message = request.data['verification_message']
             workExperience.save()
         return Response("Verified", status=status.HTTP_200_OK)

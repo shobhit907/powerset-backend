@@ -62,5 +62,6 @@ class ExamsVerify (APIView):
         exams = Exam.objects.filter(student=student)
         for exam in exams:
             exam.is_verified = request.data['is_verified']
+            exam.verification_message = request.data['verification_message']
             exam.save()
         return Response("Verified", status=status.HTTP_200_OK)

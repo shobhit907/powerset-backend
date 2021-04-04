@@ -62,5 +62,6 @@ class CoursesVerify (APIView):
         courses = Course.objects.filter(student=student)
         for course in courses:
             course.is_verified = request.data['is_verified']
+            course.verification_message = request.data['verification_message']
             course.save()
         return Response("Verified", status=status.HTTP_200_OK)

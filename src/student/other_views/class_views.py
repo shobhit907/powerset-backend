@@ -62,5 +62,6 @@ class ClassesVerify (APIView):
         classes = Class.objects.filter(student=student)
         for clas in classs:
             clas.is_verified = request.data['is_verified']
+            clas.verification_message = request.data['verification_message']
             clas.save()
         return Response("Verified", status=status.HTTP_200_OK)

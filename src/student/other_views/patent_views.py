@@ -62,5 +62,6 @@ class PatentsVerify (APIView):
         patents = Patent.objects.filter(student=student)
         for patent in patents:
             patent.is_verified = request.data['is_verified']
+            patent.verification_message = request.data['verification_message']
             patent.save()
         return Response("Verified", status=status.HTTP_200_OK)

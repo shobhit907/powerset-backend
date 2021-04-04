@@ -65,5 +65,6 @@ class AwardAndRecognitionsVerify (APIView):
         awardAndRecognitions = AwardAndRecognition.objects.filter(student=student)
         for awardAndRecognition in awardAndRecognitions:
             awardAndRecognition.is_verified = request.data['is_verified']
+            awardAndRecognition.verification_message = request.data['verification_message']
             awardAndRecognition.save()
         return Response("Verified", status=status.HTTP_200_OK)

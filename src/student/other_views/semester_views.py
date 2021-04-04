@@ -79,5 +79,6 @@ class SemestersVerify (APIView):
         semesters = Semester.objects.filter(student=student)
         for semester in semesters:
             semester.is_verified = request.data['is_verified']
+            semester.verification_message = request.data['verification_message']
             semester.save()
         return Response("Verified", status=status.HTTP_200_OK)

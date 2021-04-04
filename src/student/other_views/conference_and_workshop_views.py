@@ -66,5 +66,6 @@ class ConferencesAndWorkshopsVerify (APIView):
         conferencesAndWorkshops = ConferencesAndWorkshop.objects.filter(student=student)
         for conferencesAndWorkshop in conferencesAndWorkshops:
             conferencesAndWorkshop.is_verified = request.data['is_verified']
+            conferencesAndWorkshop.verification_message = request.data['verification_message']
             conferencesAndWorkshop.save()
         return Response("Verified", status=status.HTTP_200_OK)
