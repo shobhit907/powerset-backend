@@ -8,6 +8,7 @@ from rest_framework.serializers import Serializer
 from rest_framework import status
 
 from .models import *
+from placement.models import Coordinator
 from .serializers import *
 from serializers_common import StudentReadSerializer
 from .forms import *
@@ -15,7 +16,6 @@ import json
 from collections import OrderedDict
 
 # Create your views here.
-
 
 class ApiTestView (APIView):
     def get(self, request):
