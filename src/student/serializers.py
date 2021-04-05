@@ -16,7 +16,8 @@ class StudentReadSerializer (serializers.ModelSerializer):
 
     def get_coordinators(self, obj):
         coordinators_in = Coordinator.objects.filter(student=obj)
-        serialized_data=CoordinatorSerializer(coordinators_in, many=True).data
+        serialized_data = CoordinatorSerializer(
+            coordinators_in, many=True).data
         return serialized_data
 
     class Meta:
