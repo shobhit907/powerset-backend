@@ -62,5 +62,6 @@ class ProjectsVerify (APIView):
         projects = Project.objects.filter(student=student)
         for project in projects:
             project.is_verified = request.data['is_verified']
+            project.verification_message = request.data['verification_message']
             project.save()
         return Response("Verified", status=status.HTTP_200_OK)

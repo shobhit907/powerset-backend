@@ -62,5 +62,6 @@ class CertificationsVerify (APIView):
         certifications = Certification.objects.filter(student=student)
         for certification in certifications:
             certification.is_verified = request.data['is_verified']
+            certification.verification_message = request.data['verification_message']
             certification.save()
         return Response("Verified", status=status.HTTP_200_OK)

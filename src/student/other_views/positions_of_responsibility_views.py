@@ -66,5 +66,6 @@ class positionsOfResponsibilitiesVerify (APIView):
         positionsOfResponsibilities = PositionsOfResponsibility.objects.filter(student=student)
         for positionsOfResponsibility in positionsOfResponsibilities:
             positionsOfResponsibility.is_verified = request.data['is_verified']
+            positionsOfResponsibility.verification_message = request.data['verification_message']
             positionsOfResponsibility.save()
         return Response("Verified", status=status.HTTP_200_OK)

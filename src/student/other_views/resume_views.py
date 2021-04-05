@@ -66,5 +66,6 @@ class ResumesVerify (APIView):
         resumes = Resume.objects.filter(student=student)
         for resume in resumes:
             resume.is_verified = request.data['is_verified']
+            resume.verification_message = request.data['verification_message']
             resume.save()
         return Response("Verified", status=status.HTTP_200_OK)

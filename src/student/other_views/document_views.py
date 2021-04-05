@@ -63,5 +63,6 @@ class DocumentsVerify (APIView):
         documents = Document.objects.filter(student=student)
         for document in documents:
             document.is_verified = request.data['is_verified']
+            document.verification_message = request.data['verification_message']
             document.save()
         return Response("Verified", status=status.HTTP_200_OK)

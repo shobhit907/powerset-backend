@@ -75,5 +75,6 @@ class SocialProfilesVerify (APIView):
             socialProfile = None
             return Response("Social profile does not exist for this student so nothing to verify", status=status.HTTP_200_OK)
         socialProfile.is_verified = request.data['is_verified']
+        socialProfile.verification_message = request.data['verification_message']
         socialProfile.save()
         return Response("Verified", status=status.HTTP_200_OK)

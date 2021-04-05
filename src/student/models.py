@@ -8,12 +8,14 @@ class Student (models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='students')
     institute = models.ForeignKey(
         Institute, on_delete=models.CASCADE, related_name='students')
-    is_verified = models.BooleanField(default=False)
+    is_verified = models.CharField(max_length= 1, default='U', choices=[('U', 'Unverified'), ('V', 'Verified'), ('R', 'Rejected')])
+    verification_message = models.TextField(blank=True)
     entry_number = models.CharField(max_length=50, unique=True, null=False)
     gender = models.CharField(default='M',
         max_length=10, choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Other')])
     branch = models.CharField(max_length=50, null=False)
     degree = models.CharField(max_length=50, null=False)
+    batch = models.IntegerField(validators=[MinValueValidator(2000)], default=2020)
     cgpa = models.FloatField(default=0.0,
         validators=[MinValueValidator(0.0), MaxValueValidator(10.0)])
     mother_name = models.CharField(max_length=50, null=False)
@@ -24,6 +26,7 @@ class Student (models.Model):
     technical_skills = models.TextField(blank=True)
     introduction = models.TextField(blank=True)
     career_plans = models.TextField(blank=True)
+    is_selected = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.id)+' '+self.entry_number
@@ -38,6 +41,7 @@ class SocialProfile (models.Model):
     codechef = models.URLField(blank=True)
     codeforces = models.URLField(blank=True)
     is_verified = models.BooleanField(default=False)
+    verification_message = models.TextField(blank=True)
 
     def __str__(self):
         return '%s Social profiles' % self.student.entry_number
@@ -52,6 +56,7 @@ class Project (models.Model):
     end_date = models.DateField(blank=True)
     description = models.TextField(blank=True)
     is_verified = models.BooleanField(default=False)
+    verification_message = models.TextField(blank=True)
 
     def __str__(self):
         return '%s Project Title: %s' % (self.student.entry_number, self.title)
@@ -68,6 +73,7 @@ class Patent (models.Model):
         'P', 'Patent Pending'), ('I', 'Patent Issued')], null=False)
     filing_date = models.DateField()
     is_verified = models.BooleanField(default=False)
+    verification_message = models.TextField(blank=True)
 
     def __str__(self):
         return '%s Patent Title: %s' % (self.student.entry_number, self.title)
@@ -84,6 +90,7 @@ class Resume (models.Model):
     resume = models.FileField(upload_to=get_resume_upload_path, null=True)
     is_latest = models.BooleanField(default=True)
     is_verified = models.BooleanField(default=False)
+    verification_message = models.TextField(blank=True)
 
     def __str__(self):
         return '%s Resume: %s' % (self.student.entry_number, self.name)
@@ -97,6 +104,7 @@ class AwardAndRecognition (models.Model):
     issuer = models.CharField(max_length=50, null=False)
     issue_date = models.DateField()
     is_verified = models.BooleanField(default=False)
+    verification_message = models.TextField(blank=True)
     # associatedWith = list of all academic intitutes of student
 
     def __str__(self):
@@ -115,6 +123,7 @@ class WorkExperience (models.Model):
     compensation_max = models.IntegerField(validators=[MinValueValidator(0)])
     description = models.TextField(blank=True)
     is_verified = models.BooleanField(default=False)
+    verification_message = models.TextField(blank=True)
 
     def __str__(self):
         return '%s Work Experience Title: %s' % (self.student.entry_number, self.job_title)
@@ -128,6 +137,7 @@ class Course (models.Model):
     grade_secured = models.CharField(max_length=2, choices=[(
         'A', 'A'), ('A-', 'A-'), ('B', 'B'), ('B-', 'B-'), ('C', 'C'), ('C-', 'C-'), ('F', 'F')], null=False)
     is_verified = models.BooleanField(default=False)
+    verification_message = models.TextField(blank=True)
 
     def __str__(self):
         return '%s Course Title: %s' % (self.student.entry_number, self.code)
@@ -142,6 +152,7 @@ class Competition (models.Model):
     date = models.DateField()
     description = models.TextField(blank=True)
     is_verified = models.BooleanField(default=False)
+    verification_message = models.TextField(blank=True)
 
     def __str__(self):
         return '%s Competition Title: %s' % (self.student.entry_number, self.title)
@@ -156,6 +167,7 @@ class PositionsOfResponsibility (models.Model):
     to_date = models.DateField()
     organization_name = models.CharField(max_length=50, null=False)
     is_verified = models.BooleanField(default=False)
+    verification_message = models.TextField(blank=True)
 
     def __str__(self):
         return '%s Position of Responsibility Title: %s' % (self.student.entry_number, self.title)
@@ -171,6 +183,7 @@ class Document (models.Model):
     name = models.CharField(max_length=50)
     document = models.FileField(upload_to=get_document_upload_path, null=True)
     is_verified = models.BooleanField(default=False)
+    verification_message = models.TextField(blank=True)
 
     def __str__(self):
         return '%s Document Name: %s' % (self.student.entry_number, self.name)
@@ -192,6 +205,7 @@ class Semester (models.Model):
     grade_sheet = models.FileField(
         upload_to=get_grade_sheet_upload_path, null=True)
     is_verified = models.BooleanField(default=False)
+    verification_message = models.TextField(blank=True)
 
     def __str__(self):
         return '%s Semester Number: %s' % (self.student.entry_number, self.number)
@@ -209,6 +223,7 @@ class Class (models.Model):
     board = models.CharField(max_length=50, null=False)
     stream = models.CharField(max_length=50)
     is_verified = models.BooleanField(default=False)
+    verification_message = models.TextField(blank=True)
 
     def __str__(self):
         return '%s Class Number: %s' % (self.student.entry_number, self.number)
@@ -225,6 +240,7 @@ class Certification (models.Model):
     has_expiry = models.BooleanField(default=False)
     description = models.TextField(blank=True)
     is_verified = models.BooleanField(default=False)
+    verification_message = models.TextField(blank=True)
 
     def __str__(self):
         return '%s Certification Name: %s' % (self.student.entry_number, self.name)
@@ -238,6 +254,7 @@ class ConferencesAndWorkshop (models.Model):
     organizer = models.CharField(max_length=50, null=False)
     address = models.TextField()
     is_verified = models.BooleanField(default=False)
+    verification_message = models.TextField(blank=True)
 
     def __str__(self):
         return '%s Conference or Workshop Title: %s' % (self.student.entry_number, self.title)
@@ -266,6 +283,7 @@ class Exam (models.Model):
     exam_date = models.DateField()
     associated_with = models.CharField(max_length=200, null=False)
     is_verified = models.BooleanField(default=False)
+    verification_message = models.TextField(blank=True)
 
     def __str__(self):
         return '%s Test Title: %s' % (self.student.entry_number, self.title)
