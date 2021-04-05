@@ -3,6 +3,7 @@ from accounts.serializers import *
 from student.models import Student
 from placement.models import JobApplicant, Coordinator
 
+
 class StudentReadSerializer (serializers.ModelSerializer):
     institute = InstituteSerializer()
     user = UserSerializer()
@@ -17,7 +18,7 @@ class StudentReadSerializer (serializers.ModelSerializer):
     class Meta:
         model = Student
         fields = ('id', 'entry_number', 'is_verified', 'branch', 'institute', 'user', 'degree', 'mother_name',
-                  'father_name', 'preferred_profile', 'category', 'technical_skills', 'introduction', 'career_plans', 'coordinators')
+                  'father_name', 'preferred_profile', 'category', 'technical_skills', 'introduction', 'career_plans', 'coordinators', 'batch', 'cgpa', 'verification_message')
 
 
 class JobApplicantSerializer(serializers.ModelSerializer):
