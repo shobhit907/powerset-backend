@@ -1,7 +1,7 @@
 from placement.serializers import InstituteSerializer
 from accounts.serializers import *
 from student.models import Student
-from placement.models import JobApplicant
+from placement.models import JobApplicant, Coordinator
 
 class StudentReadSerializer (serializers.ModelSerializer):
     institute = InstituteSerializer()
