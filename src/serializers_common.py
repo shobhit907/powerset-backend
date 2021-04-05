@@ -1,4 +1,4 @@
-from placement.serializers import InstituteSerializer
+from placement.serializers import InstituteSerializer, CoordinatorSerializer
 from accounts.serializers import *
 from student.models import Student
 from placement.models import JobApplicant, Coordinator
