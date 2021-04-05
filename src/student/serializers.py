@@ -2,6 +2,7 @@ from django.db.models import fields
 from rest_framework import serializers
 from accounts.serializers import *
 from .models import *
+from placement.models import Coordinator
 
 # Create your serializers here.
 JSON_ALLOWED_OBJECTS = (dict, list, tuple, str, int, bool)

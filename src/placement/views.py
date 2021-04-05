@@ -114,9 +114,18 @@ class JobProfileView (APIView):
             student = None
         if (student == None):
             return Response("Please login as a valid student to see the jobs")
-        noOfBacklogs = GetNumberOfBacklogs(student)
-        jobProfiles = JobProfile.objects.filter(
-            min_cgpa__lte=student.cgpa, max_backlogs__gte=noOfBacklogs, gender_allowed__contains=student.gender)
+        coordinators = Coordinator.objects.filter(student=student)
+        if not coordinators:
+            noOfBacklogs = GetNumberOfBacklogs(student)
+            jobProfiles = JobProfile.objects.filter(
+                min_cgpa__lte=student.cgpa, max_backlogs__gte=noOfBacklogs, gender_allowed__contains=student.gender)
+        else:
+            jIds = []
+            for coordinator in coordinators:
+                jps = JobProfile.objects.filter(placement=coordinator.placement)
+                for jp in jps:
+                    jIds.append(jp.id)
+            jobProfiles = JobProfile.objects.filter(id__in=jIds)
         serializer = JobProfileReadSerializer(jobProfiles, many=True)
         return Response(serializer.data)
 
