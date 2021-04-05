@@ -1,6 +1,7 @@
 from placement.serializers import InstituteSerializer, CoordinatorSerializer
 from accounts.serializers import *
 from student.models import Student
+from placement.serializers import JobProfileReadSerializer
 from placement.models import JobApplicant, Coordinator
 
 
@@ -24,6 +25,7 @@ class StudentReadSerializer (serializers.ModelSerializer):
 class JobApplicantSerializer(serializers.ModelSerializer):
 
     student = StudentReadSerializer()
+    job_profile = JobProfileReadSerializer()
 
     class Meta:
         model = JobApplicant

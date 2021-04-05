@@ -165,11 +165,12 @@ class AppliedJobsView (APIView):
         if (student == None):
             return Response("Please login as a valid student to see the jobs in which you have applied")
         jobApplications = JobApplicant.objects.filter(student=student)
-        jobIds = []
-        for j in jobApplications:
-            jobIds.append(j.job_profile.id)
-        appliedJobs = JobProfile.objects.filter(id__in=jobIds)
-        serializer = JobProfileReadSerializer(appliedJobs, many=True)
+        # jobIds = []
+        # for j in jobApplications:
+        #     jobIds.append(j.job_profile.id)
+        # appliedJobs = JobProfile.objects.filter(id__in=jobIds)
+        # serializer = JobProfileReadSerializer(appliedJobs, many=True)
+        serializer = JobApplicantSerializer(jobApplications, many=True)
         return Response(serializer.data)
 
 #Incomplete as of now
