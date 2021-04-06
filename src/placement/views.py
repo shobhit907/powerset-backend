@@ -63,7 +63,7 @@ class CancelJobsApplication (APIView):
                 jobProfile = None
             if (jobProfile == None):
                 return Response("Invalid job profile")
-            JobApplicant.objects.filter(student=student, job_profile=jobProfile).delete()
+            JobApplicant.objects.filter(student=student, job_profile=jobProfile, is_selected=False).delete()
         return Response("Done")
 
 class JobsApply (APIView):
@@ -84,22 +84,23 @@ class JobsApply (APIView):
                 jobProfile = None
             if (jobProfile == None):
                 return Response("Invalid job profile")
-            jobRounds = JobRound.objects.filter(job_profile=jobProfile)
-            if (len(jobRounds) == 0):
-                jobRound = JobRound(round_no=0, job_profile=jobProfile)
-                jobRound.save()
-            jobRounds = JobRound.objects.filter(job_profile=jobProfile)
-            for jobRound in jobRounds:
+
+            #Checking if already applied in this job
+            for jobRound in jobProfile.number_of_rounds:
                 try:
                     jobApplicant = JobApplicant.objects.get(
                         student=student, job_profile=jobProfile, job_round=jobRound)
                 except JobApplicant.DoesNotExist:
                     jobApplicant = None
+                
+                #If already applied then break
                 if (jobApplicant != None):
                     break
+            
+            #If not applied then apply
             if (jobApplicant == None):
                 jobApplicant = JobApplicant(
-                    student=student, job_profile=jobProfile, job_round=jobRound)
+                    student=student, job_profile=jobProfile, job_round=1)
                 jobApplicant.save()
         return Response("Done")
 
@@ -116,6 +117,8 @@ class JobProfileView (APIView):
             return Response("Please login as a valid student to see the jobs")
         coordinators = Coordinator.objects.filter(student=student)
         if not coordinators:
+            if (student.is_selected):
+                return Response("Student is already selected in a job so he/she is now uneligible for appying in further jobs", status=status.HTTP_200_OK)
             noOfBacklogs = GetNumberOfBacklogs(student)
             jobProfiles = JobProfile.objects.filter(
                 min_cgpa__lte=student.cgpa, max_backlogs__gte=noOfBacklogs, gender_allowed__contains=student.gender)
@@ -165,11 +168,6 @@ class AppliedJobsView (APIView):
         if (student == None):
             return Response("Please login as a valid student to see the jobs in which you have applied")
         jobApplications = JobApplicant.objects.filter(student=student)
-        # jobIds = []
-        # for j in jobApplications:
-        #     jobIds.append(j.job_profile.id)
-        # appliedJobs = JobProfile.objects.filter(id__in=jobIds)
-        # serializer = JobProfileReadSerializer(appliedJobs, many=True)
         serializer = JobApplicantSerializer(jobApplications, many=True)
         return Response(serializer.data)
 
@@ -194,8 +192,28 @@ class UpdateApplicantRound (APIView):
         except:
             jobApplicant = None
             return Response("Given student has not applied to the given job")
-        currentRound = jobApplicant.job_round.round_no
-        try:
-            newRound = JobRound.objects.get(round_no=currentRound, job_profile=jobProfile)
-        except JobRound.DoesNotExist:
-            return Response("The candidate was already in the last round. So he is selected")
+        currentRound = jobApplicant.job_round
+        newRound = currentRound + 1
+
+        recepients = []
+        recepients.append(jobApplicant.student.user.email)
+
+        if (newRound > jobProfile.number_of_rounds):
+            jobApplicant.is_selected = True
+            jobApplicant.student.is_selected = True
+            jobApplicant.save()
+            jobApplicant.student.save()
+
+            subject = 'Congratulations! Selected for ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title)
+            message = 'Dear Student,\n\nCongratulations! We are glad to inform you that you have received an offer in ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title) + '.\n\nRegards\nPowerset team'
+            send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
+
+            return Response("The candidate was already in the last round. So he is selected", status=status.HTTP_200_OK)
+
+        subject = 'Congratulations! Shortlisted to the next round in ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title)
+        message = 'Dear Student,\n\nWe are glad to inform you that you have been shortlisted for the next round in ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title) + '\n\nYour previous round: ' + str(currentRound) + '\nYour new round: ' + str(newRound) + '.\n\nRegards\nPowerset team'
+        send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
+
+        jobApplicant.job_round = newRound
+        jobApplicant.save()
+        return Response("Done", status=status.HTTP_200_OK)
