@@ -10,4 +10,5 @@ urlpatterns = [
     path('apply/', views.JobsApply.as_view()),
     path('cancel/', views.CancelJobsApplication.as_view()),
     path('applied-jobs/', views.AppliedJobsView.as_view()),
+    path('update-round/', views.UpdateApplicantRound.as_view()),
 ]
