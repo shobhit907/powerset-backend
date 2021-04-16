@@ -86,7 +86,7 @@ class JobsApply (APIView):
                 return Response("Invalid job profile")
 
             #Checking if already applied in this job
-            for jobRound in jobProfile.number_of_rounds:
+            for jobRound in range(1, jobProfile.number_of_rounds+1):
                 try:
                     jobApplicant = JobApplicant.objects.get(
                         student=student, job_profile=jobProfile, job_round=jobRound)
@@ -171,7 +171,6 @@ class AppliedJobsView (APIView):
         serializer = JobApplicantSerializer(jobApplications, many=True)
         return Response(serializer.data)
 
-#Incomplete as of now
 class UpdateApplicantRound (APIView):
     def put (self, request):
         try:
@@ -210,7 +209,7 @@ class UpdateApplicantRound (APIView):
 
             return Response("The candidate was already in the last round. So he is selected", status=status.HTTP_200_OK)
 
-        subject = 'Congratulations! Shortlisted to the next round in ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title)
+        subject = 'Shortlisted to the next round in ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title)
         message = 'Dear Student,\n\nWe are glad to inform you that you have been shortlisted for the next round in ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title) + '\n\nYour previous round: ' + str(currentRound) + '\nYour new round: ' + str(newRound) + '.\n\nRegards\nPowerset team'
         send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
 
