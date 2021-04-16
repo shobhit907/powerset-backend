@@ -243,3 +243,31 @@ class UpdateApplicantRound (APIView):
         jobApplicant.job_round = newRound
         jobApplicant.save()
         return Response("Done", status=status.HTTP_200_OK)
+
+class RejectApplicantView (APIView):
+
+    def delete (self, request):
+        try:
+            jobProfile = JobProfile.objects.get(id=request.data['job_id'])
+        except JobProfile.DoesNotExist:
+            return Response("Job profile with given id does not exist")
+        student = Student.objects.filter(user=request.user).first()
+        coordinator = Coordinator.objects.filter(student=student, placement=jobProfile.placement).first()
+        if not coordinator:
+            return Response("Please log in as a coordinator to use this functionality")
+        try:
+            student = Student.objects.get(id=request.data['student_id'])
+        except Student.DoesNotExist:
+            student = None
+            return Response("Invalid student id")
+        
+        recepients = []
+        recepients.append(student.user.email)
+
+        JobApplicant.objects.filter(student=student, job_profile=jobProfile, is_selected=False).delete()
+
+        subject = 'Thank you for participating in ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title)
+        message = 'Dear Student,\n\nWe regret to inform you that you are not shortlisted for next stage of ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title) + '\n\nWe would like to wish you very best for future placements.\n\nRegards\nPowerset team'
+        send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
+
+        return Response("Done")
