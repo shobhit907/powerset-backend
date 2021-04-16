@@ -3,6 +3,18 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.conf import settings
 from placement.models import Institute
 
+branch_choices = (('CSE', 'Computer Science & Engineering'),
+                  ('EE', 'Electrical Engineering'),
+                  ('ME', 'Mechanical Engineering'),
+                  ('CE', 'Civil Engineering'),
+                  ('MME', 'Metallurgical and Materials Engineering'),
+                  ('MNC', 'Mathematics & Computing'),
+                  ('CBME', 'Center for BioMedical Engineering'),
+                  ('HSS', 'Humanities and Social Sciences'),
+                  ('P', 'Physics'),
+                  ('C', 'Chemistry'),
+                  ('M', 'Mathematics'))
+
 class Student (models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='students')
@@ -13,7 +25,7 @@ class Student (models.Model):
     entry_number = models.CharField(max_length=50, unique=True, null=False)
     gender = models.CharField(default='M',
         max_length=10, choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Other')])
-    branch = models.CharField(max_length=50, null=False)
+    branch = models.CharField(max_length=50, default='CSE', choices=branch_choices, null=False)
     degree = models.CharField(max_length=50, null=False)
     batch = models.IntegerField(validators=[MinValueValidator(2000)], default=2020)
     cgpa = models.FloatField(default=0.0,

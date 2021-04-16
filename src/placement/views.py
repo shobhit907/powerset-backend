@@ -115,6 +115,27 @@ class JobsApply (APIView):
                 send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
         return Response("Done")
 
+class CoordinatorViewJobs (APIView):
+
+    def get (self, request):
+        try:
+            student = Student.objects.get(user=request.user)
+        except Student.DoesNotExist:
+            student = None
+        if (student == None):
+            return Response("Please login as a valid student to see the jobs")
+        coordinators = Coordinator.objects.filter(student=student)
+        if not coordinators:
+            return Response("Please log in as a coordinator to use this functionality")
+        jIds = []
+        for coordinator in coordinators:
+            jps = JobProfile.objects.filter(placement=coordinator.placement)
+            for jp in jps:
+                jIds.append(jp.id)
+        jobProfiles = JobProfile.objects.filter(id__in=jIds)
+        serializer = JobProfileReadSerializer(jobProfiles, many=True)
+        return Response(serializer.data)
+
 class JobProfileView (APIView):
 
     permission_classes = [IsAuthenticated]
@@ -126,20 +147,11 @@ class JobProfileView (APIView):
             student = None
         if (student == None):
             return Response("Please login as a valid student to see the jobs")
-        coordinators = Coordinator.objects.filter(student=student)
-        if not coordinators:
-            if (student.is_selected):
-                return Response("Student is already selected in a job so he/she is now uneligible for appying in further jobs", status=status.HTTP_200_OK)
-            noOfBacklogs = GetNumberOfBacklogs(student)
-            jobProfiles = JobProfile.objects.filter(
-                min_cgpa__lte=student.cgpa, max_backlogs__gte=noOfBacklogs, gender_allowed__contains=student.gender)
-        else:
-            jIds = []
-            for coordinator in coordinators:
-                jps = JobProfile.objects.filter(placement=coordinator.placement)
-                for jp in jps:
-                    jIds.append(jp.id)
-            jobProfiles = JobProfile.objects.filter(id__in=jIds)
+        if (student.is_selected):
+            return Response("Student is already selected in a job so is now uneligible for appying in further jobs", status=status.HTTP_200_OK)
+        noOfBacklogs = GetNumberOfBacklogs(student)
+        jobProfiles = JobProfile.objects.filter(
+            min_cgpa__lte=student.cgpa, max_backlogs__gte=noOfBacklogs, gender_allowed__contains=student.gender, branches_eligible__contains=student.branch)
         serializer = JobProfileReadSerializer(jobProfiles, many=True)
         return Response(serializer.data)
 
@@ -202,6 +214,10 @@ class UpdateApplicantRound (APIView):
         except:
             jobApplicant = None
             return Response("Given student has not applied to the given job")
+
+        if (jobApplicant.is_selected):
+            return Response("Given student was already selected for this job")
+            
         currentRound = jobApplicant.job_round
         newRound = currentRound + 1
 
