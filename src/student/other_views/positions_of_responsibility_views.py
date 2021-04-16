@@ -12,6 +12,7 @@ from student.serializers import *
 from student.forms import *
 import json
 from collections import OrderedDict
+from student.utils import *
 
 class PositionOfResponsibiltyView (APIView):
 
@@ -68,4 +69,6 @@ class positionsOfResponsibilitiesVerify (APIView):
             positionsOfResponsibility.is_verified = request.data['is_verified']
             positionsOfResponsibility.verification_message = request.data['verification_message']
             positionsOfResponsibility.save()
+        verified = 'verified' if request.data['is_verified'] == "V" else 'rejected'
+        SendVerificationMail('Positions of Responsibilities details', student.user.email, verified, str(coordinator.student.user.name), request.data['verification_message'])
         return Response("Verified", status=status.HTTP_200_OK)

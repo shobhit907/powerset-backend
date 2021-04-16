@@ -12,6 +12,7 @@ from student.serializers import *
 from student.forms import *
 import json
 from collections import OrderedDict
+from student.utils import *
 
 class ConferencesAndWorkshopView (APIView):
 
@@ -68,4 +69,6 @@ class ConferencesAndWorkshopsVerify (APIView):
             conferencesAndWorkshop.is_verified = request.data['is_verified']
             conferencesAndWorkshop.verification_message = request.data['verification_message']
             conferencesAndWorkshop.save()
+        verified = 'verified' if request.data['is_verified'] == "V" else 'rejected'
+        SendVerificationMail('Conferences and Workshops details', student.user.email, verified, str(coordinator.student.user.name), request.data['verification_message'])
         return Response("Verified", status=status.HTTP_200_OK)

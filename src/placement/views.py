@@ -64,6 +64,11 @@ class CancelJobsApplication (APIView):
             if (jobProfile == None):
                 return Response("Invalid job profile")
             JobApplicant.objects.filter(student=student, job_profile=jobProfile, is_selected=False).delete()
+            recepients = []
+            recepients.append(jobApplicant.student.user.email)
+            subject = 'Application cancelled for ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title)
+            message = 'Dear Student,\n\nYour application for ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title) + ' was successfully cancelled. If this was not intended, please reapply immediately before the deadline - '+ str(jobProfile.end_date) + '.\n\nRegards\nPowerset team'
+            send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
         return Response("Done")
 
 class JobsApply (APIView):
@@ -102,6 +107,12 @@ class JobsApply (APIView):
                 jobApplicant = JobApplicant(
                     student=student, job_profile=jobProfile, job_round=1)
                 jobApplicant.save()
+
+                recepients = []
+                recepients.append(jobApplicant.student.user.email)
+                subject = 'Applied in ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title)
+                message = 'Dear Student,\n\nThank you for applying in ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title) + '. The details and schedule of the shortlisting procedure are available for this job on the powerset portal.\n\nRegards\nPowerset team'
+                send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
         return Response("Done")
 
 class JobProfileView (APIView):

@@ -12,6 +12,7 @@ from student.serializers import *
 from student.forms import *
 import json
 from collections import OrderedDict
+from student.utils import *
 
 class DocumentView (APIView):
 
@@ -65,4 +66,6 @@ class DocumentsVerify (APIView):
             document.is_verified = request.data['is_verified']
             document.verification_message = request.data['verification_message']
             document.save()
+        verified = 'verified' if request.data['is_verified'] == "V" else 'rejected'
+        SendVerificationMail('Documents details', student.user.email, verified, str(coordinator.student.user.name), request.data['verification_message'])
         return Response("Verified", status=status.HTTP_200_OK)
