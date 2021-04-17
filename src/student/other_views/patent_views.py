@@ -20,8 +20,10 @@ class PatentView (APIView):
 
     def get(self, request, id):
         student = Student.objects.get(user=request.user)
-        if ((not student) or student.id != id):
+        coordinator = Coordinator.objects.filter(student=student).first()
+        if not coordinator and ((not student) or student.id != id):
             return Response('Unauthorized Access')
+        student = Student.objects.filter(id=id).first()
         patents = Patent.objects.filter(student=student)
         serializer = PatentSerializer(patents, many=True)
         return Response(serializer.data)
