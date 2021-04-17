@@ -12,6 +12,7 @@ from student.serializers import *
 from student.forms import *
 import json
 from collections import OrderedDict
+from student.utils import *
 
 class DocumentView (APIView):
 
@@ -19,8 +20,10 @@ class DocumentView (APIView):
 
     def get(self, request, id):
         student = Student.objects.get(user=request.user)
-        if ((not student) or student.id != id):
+        coordinator = Coordinator.objects.filter(student=student).first()
+        if not coordinator and ((not student) or student.id != id):
             return Response('Unauthorized Access')
+        student = Student.objects.filter(id=id).first()
         documents = Document.objects.filter(student=student)
         serializer = DocumentSerializer(documents, many=True)
         return Response(serializer.data)
@@ -65,4 +68,6 @@ class DocumentsVerify (APIView):
             document.is_verified = request.data['is_verified']
             document.verification_message = request.data['verification_message']
             document.save()
+        verified = 'verified' if request.data['is_verified'] == "V" else 'rejected'
+        SendVerificationMail('Documents details', student.user.email, verified, str(coordinator.student.user.name), request.data['verification_message'])
         return Response("Verified", status=status.HTTP_200_OK)

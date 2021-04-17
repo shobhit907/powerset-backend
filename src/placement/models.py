@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 from multiselectfield import MultiSelectField
+from django.core.validators import MaxValueValidator, MinValueValidator
 # Create your models here.
 
 branch_choices = (('CSE', 'Computer Science & Engineering'),
@@ -84,6 +85,7 @@ class JobProfile(models.Model):
     salary_breakup = models.TextField(blank=True, null=True)
     gender_allowed = MultiSelectField(choices=gender_choices)
     extra_data = models.TextField(blank=True, null=True)
+    number_of_rounds = models.IntegerField(validators=[(MinValueValidator(1))], default=1)
 
     def __str__(self) -> str:
         return self.placement.name + ', '+self.company.name+', '+self.title
@@ -107,8 +109,9 @@ class JobApplicant(models.Model):
     date_applied = models.DateField(auto_now=True, blank=True)
     is_selected = models.BooleanField(default=False)
     description = models.TextField(blank=True,null=True)
-    job_round = models.ForeignKey(
-        JobRound, on_delete=models.CASCADE, related_name='applicants')
+    # job_round = models.ForeignKey(
+    #     JobRound, on_delete=models.CASCADE, related_name='applicants')
+    job_round = models.IntegerField(validators=[(MinValueValidator(1))], default=1)
 
     def __str__(self) -> str:
-        return self.job_profile.title + ', '+self.student.entry_number+', '+str(self.job_round.round_no)
+        return self.job_profile.title + ', '+self.student.entry_number+', '+str(self.job_round)
