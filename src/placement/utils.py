@@ -43,4 +43,4 @@ def SendEmailToEligibleStudents(jobProfile):
 
     subject = 'Open for application - ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title)
     message = 'Dear Student,\n\nYou are eligible for applying in ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title) + '. Please make sure to apply for the same before ' + str(jobProfile.end_date) + '.\n\nRegards\nPowerset team'
-    send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
+    # send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
