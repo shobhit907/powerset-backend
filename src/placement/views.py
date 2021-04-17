@@ -109,8 +109,8 @@ class JobsApply (APIView):
                 jobApplicant.save()
 
                 recepients = []
-                # recepients.append(jobApplicant.student.user.email)
-                recepients.append('rohittuli08@gmail.com')
+                recepients.append(jobApplicant.student.user.email)
+                # recepients.append('rohittuli08@gmail.com')
                 subject = 'Applied in ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title)
                 message = 'Dear Student,\n\nThank you for applying in ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title) + '. The details and schedule of the shortlisting procedure are available for this job on the powerset portal.\n\nRegards\nPowerset team'
                 send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
