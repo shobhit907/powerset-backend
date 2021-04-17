@@ -265,7 +265,7 @@ class RejectApplicantView (APIView):
         recepients = []
         recepients.append(student.user.email)
 
-        JobApplicant.objects.filter(student=student, job_profile=jobProfile, is_selected=False).delete()
+        JobApplicant.objects.filter(student=student, job_profile=jobProfile).delete()
 
         subject = 'Thank you for participating in ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title)
         message = 'Dear Student,\n\nWe regret to inform you that you are not shortlisted for next stage of ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title) + '\n\nWe would like to wish you very best for future placements.\n\nRegards\nPowerset team'
