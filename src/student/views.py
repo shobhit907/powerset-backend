@@ -80,14 +80,14 @@ class StudentAllView(generics.ListCreateAPIView):
 
     def list(self, request, *args, **kwargs):
         self.action = 'list'
-        return super().list(request, *args, **kwargs)
-
-    def create(self, request, *args, **kwargs):
-        self.action = 'create'
         student = get_object_or_404(Student, user=request.user)
         coordinators = Coordinator.objects.filter(student=student)
         if not coordinators:
             return Response("Unauthorized access", status=status.HTTP_401_UNAUTHORIZED)
+        return super().list(request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        self.action = 'create'
         data = OrderedDict()
         data.update(request.data)
         if 'institute' in data:
