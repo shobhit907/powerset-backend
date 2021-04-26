@@ -14,6 +14,7 @@ from serializers_common import StudentReadSerializer
 from .forms import *
 import json
 from collections import OrderedDict
+from django.shortcuts import get_object_or_404
 
 # Create your views here.
 
@@ -83,6 +84,10 @@ class StudentAllView(generics.ListCreateAPIView):
 
     def create(self, request, *args, **kwargs):
         self.action = 'create'
+        student = get_object_or_404(Student, user=request.user)
+        coordinators = Coordinator.objects.filter(student=student)
+        if not coordinators:
+            return Response("Unauthorized access", status=status.HTTP_401_UNAUTHORIZED)
         data = OrderedDict()
         data.update(request.data)
         if 'institute' in data:
