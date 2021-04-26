@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.conf import settings
-from placement.models import Institute
+from placement.models import Institute, Placement
 
 branch_choices = (('CSE', 'Computer Science & Engineering'),
                   ('EE', 'Electrical Engineering'),
@@ -21,6 +21,7 @@ class Student (models.Model):
     institute = models.ForeignKey(
         Institute, on_delete=models.CASCADE, related_name='students')
     is_verified = models.CharField(max_length= 10, default='Unverified', choices=[('Unverified', 'Unverified'), ('Verified', 'Verified'), ('Rejected', 'Rejected')])
+    placement = models.ForeignKey(Placement, on_delete=models.CASCADE, related_name='students', default=1)
     verification_message = models.TextField(blank=True)
     entry_number = models.CharField(max_length=50, unique=True, null=False)
     gender = models.CharField(default='M',

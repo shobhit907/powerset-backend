@@ -8,7 +8,7 @@ from rest_framework.serializers import Serializer
 from rest_framework import status
 
 from .models import *
-from placement.models import Coordinator
+from placement.models import Coordinator, Placement
 from .serializers import *
 from serializers_common import StudentReadSerializer
 from .forms import *
@@ -90,16 +90,29 @@ class StudentAllView(generics.ListCreateAPIView):
         self.action = 'create'
         data = OrderedDict()
         data.update(request.data)
+        data['user'] = request.user.id
         if 'institute' in data:
             del data['institute']
             data['institute'] = Institute.objects.filter(
                 name=request.data['institute']).first().id
-        data['user'] = request.user.id
-        serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(StudentReadSerializer(Student.objects.filter(user=request.user).first()).data, status=status.HTTP_201_CREATED, headers=headers)
+        if 'placement' in data:
+            del data['placement']
+            data['placement'] = Placement.objects.filter(
+                name=request.data['placement']).first().id
+        try:
+            student = Student.objects.get(entry_number=data['entry_number'])
+            if (request.user.id != student.id):
+                return Response("Unauthorized access", status=stauts.HTTP_401_UNAUTHORIZED)
+            serializer = StudentWriteSerializer(student, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response("Done", status=status.HTTP_200_OK)
+        except Student.DoesNotExist:
+            serializer = self.get_serializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(StudentReadSerializer(Student.objects.filter(user=request.user).first()).data, status=status.HTTP_201_CREATED, headers=headers)
 
 def FormTestView(request):
 
