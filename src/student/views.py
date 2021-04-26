@@ -103,7 +103,7 @@ class StudentAllView(generics.ListCreateAPIView):
             student = Student.objects.get(entry_number=data['entry_number'])
             if (request.user.id != student.user.id):
                 return Response("Unauthorized access", status=status.HTTP_401_UNAUTHORIZED)
-            serializer = StudentWriteSerializer(student, data=request.data, partial=True)
+            serializer = StudentWriteSerializer(student, data=data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response("Done", status=status.HTTP_200_OK)
