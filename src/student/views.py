@@ -107,6 +107,8 @@ class StudentAllView(generics.ListCreateAPIView):
             if serializer.is_valid():
                 serializer.save()
                 return Response("Done", status=status.HTTP_200_OK)
+            else:
+                return Response("Invalid data", status=status.HTTP_400_BAD_REQUEST)
         except Student.DoesNotExist:
             serializer = self.get_serializer(data=data)
             serializer.is_valid(raise_exception=True)
