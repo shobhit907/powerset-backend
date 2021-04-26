@@ -68,7 +68,7 @@ class CancelJobsApplication (APIView):
             recepients.append(jobApplicant.student.user.email)
             subject = 'Application cancelled for ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title)
             message = 'Dear Student,\n\nYour application for ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title) + ' was successfully cancelled. If this was not intended, please reapply immediately before the deadline - '+ str(jobProfile.end_date) + '.\n\nRegards\nPowerset team'
-            # send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
+            send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
         return Response("Done")
 
 class JobsApply (APIView):
@@ -113,7 +113,7 @@ class JobsApply (APIView):
                 # recepients.append('rohittuli08@gmail.com')
                 subject = 'Applied in ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title)
                 message = 'Dear Student,\n\nThank you for applying in ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title) + '. The details and schedule of the shortlisting procedure are available for this job on the powerset portal.\n\nRegards\nPowerset team'
-                # send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
+                send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
         return Response("Done")
 
 class CoordinatorViewJobs (APIView):
@@ -233,13 +233,13 @@ class UpdateApplicantRound (APIView):
 
             subject = 'Congratulations! Selected for ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title)
             message = 'Dear Student,\n\nCongratulations! We are glad to inform you that you have received an offer in ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title) + '.\n\nRegards\nPowerset team'
-            # send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
+            send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
 
             return Response("The candidate was already in the last round. So he is selected", status=status.HTTP_200_OK)
 
         subject = 'Shortlisted to the next round in ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title)
         message = 'Dear Student,\n\nWe are glad to inform you that you have been shortlisted for the next round in ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title) + '\n\nYour previous round: ' + str(currentRound) + '\nYour new round: ' + str(newRound) + '.\n\nRegards\nPowerset team'
-        # send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
+        send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
 
         jobApplicant.job_round = newRound
         jobApplicant.save()
@@ -269,6 +269,6 @@ class RejectApplicantView (APIView):
 
         subject = 'Thank you for participating in ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title)
         message = 'Dear Student,\n\nWe regret to inform you that you are not shortlisted for next stage of ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title) + '\n\nWe would like to wish you very best for future placements.\n\nRegards\nPowerset team'
-        # send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
+        send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
 
         return Response("Done")

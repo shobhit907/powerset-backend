@@ -6,4 +6,4 @@ def SendVerificationMail(detail, recipientEmail, verified, coordinatorName, mess
     recepients.append(recipientEmail)
     subject = detail + ' ' + verified
     message = 'Dear Student,\n\nYour ' + detail + ' have been ' + verified + ' by the coordinator - ' + coordinatorName + ' with the following message:\n\n' + message + '\n\nRegards\nPowerset team'
-    # send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
+    send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
