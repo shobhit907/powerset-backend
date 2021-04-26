@@ -20,7 +20,7 @@ class Student (models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='students')
     institute = models.ForeignKey(
         Institute, on_delete=models.CASCADE, related_name='students')
-    is_verified = models.CharField(max_length= 1, default='U', choices=[('U', 'Unverified'), ('V', 'Verified'), ('R', 'Rejected')])
+    is_verified = models.CharField(max_length= 10, default='Unverified', choices=[('Unverified', 'Unverified'), ('Verified', 'Verified'), ('Rejected', 'Rejected')])
     verification_message = models.TextField(blank=True)
     entry_number = models.CharField(max_length=50, unique=True, null=False)
     gender = models.CharField(default='M',
@@ -52,7 +52,7 @@ class SocialProfile (models.Model):
     linkedin = models.URLField(blank=True)
     codechef = models.URLField(blank=True)
     codeforces = models.URLField(blank=True)
-    is_verified = models.CharField(max_length= 1, default='U', choices=[('U', 'Unverified'), ('V', 'Verified'), ('R', 'Rejected')])
+    is_verified = models.CharField(max_length= 10, default='Unverified', choices=[('Unverified', 'Unverified'), ('Verified', 'Verified'), ('Rejected', 'Rejected')])
     verification_message = models.TextField(blank=True)
 
     def __str__(self):
@@ -67,7 +67,7 @@ class Project (models.Model):
     start_date = models.DateField(blank=True)
     end_date = models.DateField(blank=True)
     description = models.TextField(blank=True)
-    is_verified = models.CharField(max_length= 1, default='U', choices=[('U', 'Unverified'), ('V', 'Verified'), ('R', 'Rejected')])
+    is_verified = models.CharField(max_length= 10, default='Unverified', choices=[('Unverified', 'Unverified'), ('Verified', 'Verified'), ('Rejected', 'Rejected')])
     verification_message = models.TextField(blank=True)
 
     def __str__(self):
@@ -84,7 +84,7 @@ class Patent (models.Model):
     status = models.CharField(max_length=20, choices=[(
         'P', 'Patent Pending'), ('I', 'Patent Issued')], null=False)
     filing_date = models.DateField()
-    is_verified = models.CharField(max_length= 1, default='U', choices=[('U', 'Unverified'), ('V', 'Verified'), ('R', 'Rejected')])
+    is_verified = models.CharField(max_length= 10, default='Unverified', choices=[('Unverified', 'Unverified'), ('Verified', 'Verified'), ('Rejected', 'Rejected')])
     verification_message = models.TextField(blank=True)
 
     def __str__(self):
@@ -101,7 +101,7 @@ class Resume (models.Model):
         Student, on_delete=models.CASCADE, related_name='resume')
     resume = models.FileField(upload_to=get_resume_upload_path, null=True)
     is_latest = models.BooleanField(default=True)
-    is_verified = models.CharField(max_length= 1, default='U', choices=[('U', 'Unverified'), ('V', 'Verified'), ('R', 'Rejected')])
+    is_verified = models.CharField(max_length= 10, default='Unverified', choices=[('Unverified', 'Unverified'), ('Verified', 'Verified'), ('Rejected', 'Rejected')])
     verification_message = models.TextField(blank=True)
 
     def __str__(self):
@@ -115,7 +115,7 @@ class AwardAndRecognition (models.Model):
     description = models.TextField(blank=True)
     issuer = models.CharField(max_length=50, null=False)
     issue_date = models.DateField()
-    is_verified = models.CharField(max_length= 1, default='U', choices=[('U', 'Unverified'), ('V', 'Verified'), ('R', 'Rejected')])
+    is_verified = models.CharField(max_length= 10, default='Unverified', choices=[('Unverified', 'Unverified'), ('Verified', 'Verified'), ('Rejected', 'Rejected')])
     verification_message = models.TextField(blank=True)
     # associatedWith = list of all academic intitutes of student
 
@@ -134,7 +134,7 @@ class WorkExperience (models.Model):
     compensation_min = models.IntegerField(validators=[MinValueValidator(0)])
     compensation_max = models.IntegerField(validators=[MinValueValidator(0)])
     description = models.TextField(blank=True)
-    is_verified = models.CharField(max_length= 1, default='U', choices=[('U', 'Unverified'), ('V', 'Verified'), ('R', 'Rejected')])
+    is_verified = models.CharField(max_length= 10, default='Unverified', choices=[('Unverified', 'Unverified'), ('Verified', 'Verified'), ('Rejected', 'Rejected')])
     verification_message = models.TextField(blank=True)
 
     def __str__(self):
@@ -148,7 +148,7 @@ class Course (models.Model):
     title = models.CharField(max_length=50, null=False)
     grade_secured = models.CharField(max_length=2, choices=[(
         'A', 'A'), ('A-', 'A-'), ('B', 'B'), ('B-', 'B-'), ('C', 'C'), ('C-', 'C-'), ('F', 'F')], null=False)
-    is_verified = models.CharField(max_length= 1, default='U', choices=[('U', 'Unverified'), ('V', 'Verified'), ('R', 'Rejected')])
+    is_verified = models.CharField(max_length= 10, default='Unverified', choices=[('Unverified', 'Unverified'), ('Verified', 'Verified'), ('Rejected', 'Rejected')])
     verification_message = models.TextField(blank=True)
 
     def __str__(self):
@@ -163,7 +163,7 @@ class Competition (models.Model):
     associated_with = models.CharField(max_length=200, null=False)
     date = models.DateField()
     description = models.TextField(blank=True)
-    is_verified = models.CharField(max_length= 1, default='U', choices=[('U', 'Unverified'), ('V', 'Verified'), ('R', 'Rejected')])
+    is_verified = models.CharField(max_length= 10, default='Unverified', choices=[('Unverified', 'Unverified'), ('Verified', 'Verified'), ('Rejected', 'Rejected')])
     verification_message = models.TextField(blank=True)
 
     def __str__(self):
@@ -178,7 +178,7 @@ class PositionsOfResponsibility (models.Model):
     from_date = models.DateField()
     to_date = models.DateField()
     organization_name = models.CharField(max_length=50, null=False)
-    is_verified = models.CharField(max_length= 1, default='U', choices=[('U', 'Unverified'), ('V', 'Verified'), ('R', 'Rejected')])
+    is_verified = models.CharField(max_length= 10, default='Unverified', choices=[('Unverified', 'Unverified'), ('Verified', 'Verified'), ('Rejected', 'Rejected')])
     verification_message = models.TextField(blank=True)
 
     def __str__(self):
@@ -194,7 +194,7 @@ class Document (models.Model):
         Student, on_delete=models.CASCADE, related_name='document')
     name = models.CharField(max_length=50)
     document = models.FileField(upload_to=get_document_upload_path, null=True)
-    is_verified = models.CharField(max_length= 1, default='U', choices=[('U', 'Unverified'), ('V', 'Verified'), ('R', 'Rejected')])
+    is_verified = models.CharField(max_length= 10, default='Unverified', choices=[('Unverified', 'Unverified'), ('Verified', 'Verified'), ('Rejected', 'Rejected')])
     verification_message = models.TextField(blank=True)
 
     def __str__(self):
@@ -216,7 +216,7 @@ class Semester (models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(100)])
     grade_sheet = models.FileField(
         upload_to=get_grade_sheet_upload_path, null=True)
-    is_verified = models.CharField(max_length= 1, default='U', choices=[('U', 'Unverified'), ('V', 'Verified'), ('R', 'Rejected')])
+    is_verified = models.CharField(max_length= 10, default='Unverified', choices=[('Unverified', 'Unverified'), ('Verified', 'Verified'), ('Rejected', 'Rejected')])
     verification_message = models.TextField(blank=True)
 
     def __str__(self):
@@ -234,7 +234,7 @@ class Class (models.Model):
     score = models.FloatField()
     board = models.CharField(max_length=50, null=False)
     stream = models.CharField(max_length=50)
-    is_verified = models.CharField(max_length= 1, default='U', choices=[('U', 'Unverified'), ('V', 'Verified'), ('R', 'Rejected')])
+    is_verified = models.CharField(max_length= 10, default='Unverified', choices=[('Unverified', 'Unverified'), ('Verified', 'Verified'), ('Rejected', 'Rejected')])
     verification_message = models.TextField(blank=True)
 
     def __str__(self):
@@ -251,7 +251,7 @@ class Certification (models.Model):
     license_number = models.CharField(max_length=50)
     has_expiry = models.BooleanField(default=False)
     description = models.TextField(blank=True)
-    is_verified = models.CharField(max_length= 1, default='U', choices=[('U', 'Unverified'), ('V', 'Verified'), ('R', 'Rejected')])
+    is_verified = models.CharField(max_length= 10, default='Unverified', choices=[('Unverified', 'Unverified'), ('Verified', 'Verified'), ('Rejected', 'Rejected')])
     verification_message = models.TextField(blank=True)
 
     def __str__(self):
@@ -265,7 +265,7 @@ class ConferencesAndWorkshop (models.Model):
     description = models.TextField(blank=True)
     organizer = models.CharField(max_length=50, null=False)
     address = models.TextField()
-    is_verified = models.CharField(max_length= 1, default='U', choices=[('U', 'Unverified'), ('V', 'Verified'), ('R', 'Rejected')])
+    is_verified = models.CharField(max_length= 10, default='Unverified', choices=[('Unverified', 'Unverified'), ('Verified', 'Verified'), ('Rejected', 'Rejected')])
     verification_message = models.TextField(blank=True)
 
     def __str__(self):
@@ -294,7 +294,7 @@ class Exam (models.Model):
     total = models.FloatField(validators=[MinValueValidator(0.0)])
     exam_date = models.DateField()
     associated_with = models.CharField(max_length=200, null=False)
-    is_verified = models.CharField(max_length= 1, default='U', choices=[('U', 'Unverified'), ('V', 'Verified'), ('R', 'Rejected')])
+    is_verified = models.CharField(max_length= 10, default='Unverified', choices=[('Unverified', 'Unverified'), ('Verified', 'Verified'), ('Rejected', 'Rejected')])
     verification_message = models.TextField(blank=True)
 
     def __str__(self):
