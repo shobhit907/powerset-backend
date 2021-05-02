@@ -2,6 +2,7 @@ from student.models import Student, Semester
 from .models import JobRound
 from django.core.mail import send_mail
 import os
+import datetime
 
 # def CreateJobRound(roundNo, jobProfile):
 #     jobRound = JobRound()
@@ -44,3 +45,6 @@ def SendEmailToEligibleStudents(jobProfile):
     subject = 'Open for application - ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title)
     message = 'Dear Student,\n\nYou are eligible for applying in ' + str(jobProfile.company) + '\'s Job Profile : ' + str(jobProfile.title) + '. Please make sure to apply for the same before ' + str(jobProfile.end_date) + '.\n\nRegards\nPowerset team'
     send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
+
+def IsStudentEligibleForJob(student, job):
+    return student.cgpa >= job.min_cgpa and GetNumberOfBacklogs(student) <= job.max_backlogs and student.gender in job.gender_allowed and student.branch in job.branches_eligible and student.placement == job.placement and job.end_date >= datetime.date.today()

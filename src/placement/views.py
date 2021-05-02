@@ -83,13 +83,19 @@ class JobsApply (APIView):
             student = None
         if (student == None):
             return Response("Please login as a valid student to apply")
+
+        #Some basics checks across all jobs so as to prevent any incomplete applications
         for jobProfileJson in request.data:
             try:
                 jobProfile = JobProfile.objects.get(id=jobProfileJson['id'])
             except JobProfile.DoesNotExist:
-                jobProfile = None
-            if (jobProfile == None):
                 return Response("Invalid job profile")
+
+            if not IsStudentEligibleForJob(student, jobProfile):
+                return Response ("You are forcefully trying to apply to jobs in which you are not eligible. This is not allowed.", status=status.HTTP_400_BAD_REQUEST)
+
+        for jobProfileJson in request.data:
+            jobProfile = JobProfile.objects.get(id=jobProfileJson['id'])
 
             #Checking if already applied in this job
             for jobRound in range(1, jobProfile.number_of_rounds+1):
@@ -102,7 +108,7 @@ class JobsApply (APIView):
                 #If already applied then break
                 if (jobApplicant != None):
                     break
-            
+
             #If not applied then apply
             if (jobApplicant == None):
                 jobApplicant = JobApplicant(
