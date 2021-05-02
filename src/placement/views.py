@@ -164,14 +164,13 @@ class JobProfileView (APIView):
             return Response("Please log in as a coordinator to use this functionality")
         data = OrderedDict()
         data.update(request.data)
-        # Company find and create
         try:
             company = Company.objects.get(name=request.data['company'])
         except Company.DoesNotExist:
             companyData = {}
             companyData['name'] = request.data['company']
             companySerializer = CompanySerializer(data=companyData)
-            companySerializer.is_valid(raise_exception=True):
+            companySerializer.is_valid(raise_exception=True)
             company = companySerializer.save()
         company_id = company.id
         placement_id = Placement.objects.filter(
