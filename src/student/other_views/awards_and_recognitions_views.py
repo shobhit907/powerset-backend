@@ -70,7 +70,7 @@ class AwardAndRecognitionsVerify (APIView):
             awardAndRecognition.is_verified = request.data['is_verified']
             awardAndRecognition.verification_message = request.data['verification_message']
             awardAndRecognition.save()
-        verified = 'verified' if request.data['is_verified'] == "V" else 'rejected'
+        verified = 'verified' if request.data['is_verified'] == "Verified" else 'rejected'
         SendVerificationMail('Awards and Recognitions details', student.user.email, verified, str(coordinator.student.user.name), request.data['verification_message'])
         return Response("Verified", status=status.HTTP_200_OK)
 

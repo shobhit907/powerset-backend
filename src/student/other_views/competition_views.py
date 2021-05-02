@@ -67,6 +67,6 @@ class CompetitionsVerify (APIView):
             competition.is_verified = request.data['is_verified']
             competition.verification_message = request.data['verification_message']
             competition.save()
-        verified = 'verified' if request.data['is_verified'] == "V" else 'rejected'
+        verified = 'verified' if request.data['is_verified'] == "Verified" else 'rejected'
         SendVerificationMail('Competitions details', student.user.email, verified, str(coordinator.student.user.name), request.data['verification_message'])
         return Response("Verified", status=status.HTTP_200_OK)

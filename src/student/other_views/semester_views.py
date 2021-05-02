@@ -86,6 +86,6 @@ class SemestersVerify (APIView):
             semester.is_verified = request.data['is_verified']
             semester.verification_message = request.data['verification_message']
             semester.save()
-        verified = 'verified' if request.data['is_verified'] == "V" else 'rejected'
+        verified = 'verified' if request.data['is_verified'] == "Verified" else 'rejected'
         SendVerificationMail('Semesters details', student.user.email, verified, str(coordinator.student.user.name), request.data['verification_message'])
         return Response("Verified", status=status.HTTP_200_OK)

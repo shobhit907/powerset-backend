@@ -67,6 +67,6 @@ class ClassesVerify (APIView):
             clas.is_verified = request.data['is_verified']
             clas.verification_message = request.data['verification_message']
             clas.save()
-        verified = 'verified' if request.data['is_verified'] == "V" else 'rejected'
+        verified = 'verified' if request.data['is_verified'] == "Verified" else 'rejected'
         SendVerificationMail('School details', student.user.email, verified, str(coordinator.student.user.name), request.data['verification_message'])
         return Response("Verified", status=status.HTTP_200_OK)
