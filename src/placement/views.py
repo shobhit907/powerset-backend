@@ -164,6 +164,7 @@ class JobProfileView (APIView):
             return Response("Please log in as a coordinator to use this functionality")
         data = OrderedDict()
         data.update(request.data)
+        # Company find and create
         try:
             company = Company.objects.get(name=request.data['company'])
         except Company.DoesNotExist:
