@@ -13,4 +13,5 @@ urlpatterns = [
     path('applied-jobs/', views.AppliedJobsView.as_view()),
     path('update-round/', views.UpdateApplicantRound.as_view()),
     path('reject/', views.RejectApplicantView.as_view()),
+    path('companies/', views.CompanyAllView.as_view()),
 ]

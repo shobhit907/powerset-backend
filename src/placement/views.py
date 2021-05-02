@@ -279,3 +279,14 @@ class RejectApplicantView (APIView):
         send_mail(subject, message, os.getenv('EMAIL_HOST_USER'), recepients, fail_silently = False)
 
         return Response("Done")
+
+class CompanyAllView (APIView):
+
+    def get(self, request):
+        student = Student.objects.filter(user=request.user).first()
+        coordinator = Coordinator.objects.filter(student=student).first()
+        if not coordinator:
+            return Response("Please log in as a coordinator to use this functionality")
+        companies = Company.objects.all()
+        companySerializer = CompanySerializer(companies, many=True)
+        return Response(companySerializer.data, status=status.HTTP_200_OK)
