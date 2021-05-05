@@ -82,14 +82,14 @@ class JobsApply (APIView):
         except Student.DoesNotExist:
             student = None
         if (student == None):
-            return Response("Please login as a valid student to apply")
+            return Response("Please login as a valid student to apply", status=status.HTTP_401_UNAUTHORIZED)
 
         #Some basics checks across all jobs so as to prevent any incomplete applications
         for jobProfileJson in request.data:
             try:
                 jobProfile = JobProfile.objects.get(id=jobProfileJson['id'])
             except JobProfile.DoesNotExist:
-                return Response("Invalid job profile")
+                return Response("Invalid job profile", status=status.HTTP_400_BAD_REQUEST)
 
             if not IsStudentEligibleForJob(student, jobProfile):
                 return Response ("You are forcefully trying to apply to jobs in which you are not eligible. This is not allowed.", status=status.HTTP_400_BAD_REQUEST)
@@ -143,6 +143,26 @@ class CoordinatorViewJobs (APIView):
         jobProfiles = JobProfile.objects.filter(id__in=jIds)
         serializer = JobProfileReadSerializer(jobProfiles, many=True)
         return Response(serializer.data)
+
+class JobProfileSingleView (APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id):
+
+        try:
+            jobProfile = JobProfile.objects.get(id=id)
+        except JobProfile.DoesNotExist:
+            return Response("Invalid job profile", status=status.HTTP_400_BAD_REQUEST)
+
+        student = Student.objects.filter(user=request.user).first()
+        coordinator = Coordinator.objects.filter(student=student, placement=jobProfile.placement).first()
+        if not coordinator:
+            return Response("Please log in as a coordinator of this job profile's placement to use this functionality")
+
+        jobProfileSerializer = JobProfileReadSerializer(jobProfile)
+        return Response(jobProfileSerializer.data)
+
 
 class JobProfileView (APIView):
 
