@@ -157,8 +157,8 @@ class JobProfileSingleView (APIView):
 
         student = Student.objects.filter(user=request.user).first()
         coordinator = Coordinator.objects.filter(student=student, placement=jobProfile.placement).first()
-        if not coordinator:
-            return Response("Please log in as a coordinator of this job profile's placement to use this functionality")
+        if not coordinator and not IsStudentEligibleForJob(student, jobProfile):
+            return Response("Unauthorized Access")
 
         jobProfileSerializer = JobProfileReadSerializer(jobProfile)
         return Response(jobProfileSerializer.data)
