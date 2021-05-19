@@ -32,9 +32,10 @@ class ResumeView (APIView):
         student = Student.objects.get(user=request.user)
         if (student.id != id and request.user.get_username() != 'admin@gmail.com'):
             return Response('Unauthorized Access')
-        resumeDict = OrderedDict()
-        resumeDict.update(request.data)
+        resumeDict = {}
+        resumeDict['name'] = request.data['name']
         resumeDict['student']=student.id
+        resumeDict['resume']=request.data.get('resume')
         serialzer = ResumeSerializer(data=resumeDict)
         serialzer.is_valid(raise_exception=True)
         for resume in Resume.objects.filter(student=student):

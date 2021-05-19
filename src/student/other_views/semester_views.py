@@ -38,8 +38,6 @@ class SemesterView (APIView):
         semesterDict['number_of_backlogs'] = request.data['number_of_backlogs']
         semesterDict['grade_sheet'] = request.data.get('grade_sheet')
         semesterDict['student'] = student
-        print(request.FILES)
-        print(semesterDict['grade_sheet'])
         if (semesterDict.get('grade_sheet') == None):
             semester = Semester.objects.get(
                 student=student, number=semesterDict['number'])
