@@ -177,6 +177,8 @@ class JobProfileView (APIView):
             return Response("Please login as a valid student to see the jobs")
         if (student.is_selected):
             return Response("Student is already selected in a job so is now uneligible for appying in further jobs", status=status.HTTP_200_OK)
+        if (student.is_verified != 'Verified'):
+            return Response("Student is not verified and so uneligible for appying in jobs", status=status.HTTP_200_OK)
         noOfBacklogs = GetNumberOfBacklogs(student)
         jobProfiles = JobProfile.objects.filter(
             min_cgpa__lte=student.cgpa, max_backlogs__gte=noOfBacklogs, gender_allowed__contains=student.gender, branches_eligible__contains=student.branch, placement=student.placement, end_date__gte=datetime.date.today())
