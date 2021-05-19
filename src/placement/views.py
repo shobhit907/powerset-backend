@@ -1,5 +1,6 @@
+from functools import partial
 from django.http.response import HttpResponseNotFound
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework import status
@@ -162,6 +163,43 @@ class JobProfileSingleView (APIView):
 
         jobProfileSerializer = JobProfileReadSerializer(jobProfile)
         return Response(jobProfileSerializer.data)
+
+    def put(self, request, id):
+        student = Student.objects.filter(user=request.user).first()
+        coordinator = Coordinator.objects.filter(student=student, placement=Placement.objects.filter(
+            name=request.data['placement']).first()).first()
+        if not coordinator:
+            return Response("Please log in as a coordinator to use this functionality")
+        data = OrderedDict()
+        data.update(request.data)
+        try:
+            company = Company.objects.get(name=request.data['company'])
+        except Company.DoesNotExist:
+            companyData = {}
+            companyData['name'] = request.data['company']
+            companySerializer = CompanySerializer(data=companyData)
+            companySerializer.is_valid(raise_exception=True)
+            company = companySerializer.save()
+        company_id = company.id
+        placement_id = Placement.objects.filter(
+            name=request.data['placement']).first().id
+        data.pop('company')
+        data.pop('placement')
+        data.pop('branches_eligible')
+        data.pop('gender_allowed')
+        data['company'] = company_id
+        data['placement'] = placement_id
+        data['branches_eligible'] = json.loads(
+            request.data['branches_eligible'])
+        data['gender_allowed'] = json.loads(request.data['gender_allowed'])
+        job= get_object_or_404(JobProfile, id=id)
+        if not data.get('start_date'):
+            data['start_date'] = job.start_date
+        serializer = JobProfileWriteSerializer(job, data=data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        jobProfile = serializer.save()
+        SendEmailToEligibleStudents(jobProfile)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class JobProfileView (APIView):
