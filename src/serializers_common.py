@@ -27,7 +27,7 @@ class StudentReadSerializer (serializers.ModelSerializer):
 
     class Meta:
         model = Student
-        fields = ('id', 'entry_number', 'is_verified', 'branch', 'institute', 'user', 'degree', 'mother_name', 'placement', 'primary_resume', 'is_selected'
+        fields = ('id', 'entry_number', 'is_verified', 'branch', 'institute', 'user', 'degree', 'mother_name', 'placement', 'primary_resume', 'is_selected',
                   'father_name', 'preferred_profile', 'category', 'technical_skills', 'introduction', 'career_plans', 'coordinators', 'batch', 'cgpa', 'verification_message')
 
 
