@@ -309,6 +309,13 @@ class RejectApplicantView (APIView):
 
         return Response("Done")
 
+class CompanyData(object):
+    def __init__(self, company, visit_date, leave_date, st):
+        self.company = company
+        self.visit_date = visit_date
+        self.leave_date = leave_date
+        self.company_status = st
+
 class CompanyAllView (APIView):
 
     def get(self, request):
@@ -317,5 +324,22 @@ class CompanyAllView (APIView):
         if not coordinator:
             return Response("Please log in as a coordinator to use this functionality")
         companies = Company.objects.all()
-        companySerializer = CompanySerializer(companies, many=True)
-        return Response(companySerializer.data, status=status.HTTP_200_OK)
+
+        responseData = []
+
+        for company in companies:
+            jobProfiles=JobProfile.objects.filter(company=company)
+            company_visit_date = min([job.start_date for job in jobProfiles])
+            company_leave_date = max([job.end_date for job in jobProfiles])
+            today = datetime.date.today()
+            companyStatus=None
+            if (company_visit_date <= today and company_leave_date >= today):
+                companyStatus="present"
+            elif (company_visit_date > today):
+                companyStatus="future"
+            else:
+                companyStatus="past"
+            companyData = CompanyData(company, company_visit_date, company_leave_date, companyStatus)
+            responseData.append(companyData)
+
+        return Response(CompanyDataSerializer(responseData, many=True).data, status=status.HTTP_200_OK)

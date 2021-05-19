@@ -13,6 +13,11 @@ class CompanySerializer(serializers.ModelSerializer):
         model = Company
         fields = '__all__'
 
+class CompanyDataSerializer(serializers.Serializer):
+    company=serializers.CharField(max_length=20)
+    visit_date=serializers.DateField()
+    leave_date=serializers.DateField()
+    company_status=serializers.CharField(max_length=10)
 
 class PlacementSerializer(serializers.ModelSerializer):
     class Meta:
