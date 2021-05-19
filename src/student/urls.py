@@ -25,6 +25,7 @@ urlpatterns = [
     path('', views.StudentAllView.as_view()),
     path('me/', views.StudentMeView.as_view()),
     path('<int:id>/', views.StudentSingleView.as_view()),
+    path('<int:id>/verify/', views.StudentVerify.as_view()),
     path('<int:id>/awards-and-recognitions/', awards_and_recognitions_views.AwardAndRecognitionView.as_view()),
     path('<int:id>/awards-and-recognitions/verify/', awards_and_recognitions_views.AwardAndRecognitionsVerify.as_view()),
     path('awards-and-recognitions/', awards_and_recognitions_views.AwardAndRecognitionsAllView.as_view()),

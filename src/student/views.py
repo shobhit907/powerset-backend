@@ -15,6 +15,7 @@ from .forms import *
 import json
 from collections import OrderedDict
 from django.shortcuts import get_object_or_404
+from student.utils import *
 
 # Create your views here.
 
@@ -23,6 +24,23 @@ class ApiTestView (APIView):
         student = Student.objects.all()
         serializer = StudentReadSerializer(student, many=True)
         return Response(serializer.data)
+
+class StudentVerify (APIView):
+    def put(self, request, id):
+        student = Student.objects.get(user=request.user)
+        coordinator = Coordinator.objects.filter(student=student).first()
+        if (not coordinator):
+            return Response('You must be logged in as coordinator to verify a student\'s details', status=status.HTTP_401_UNAUTHORIZED)
+        try:
+            student = Student.objects.get(id=id)
+        except Student.DoesNotExist:
+            student=None
+            return Response("Student with given id does not exist", status=status.HTTP_400_BAD_REQUEST)
+        student.is_verified = request.data['is_verified']
+        student.verification_message = request.data['verification_message']
+        student.save()
+        verified = 'verified' if request.data['is_verified'] == "Verified" else 'rejected'
+        SendVerificationMail('About section details', student.user.email, verified, str(coordinator.student.user.name), request.data['verification_message'])
 
 class StudentSingleView(APIView):
     permission_classes = [IsAuthenticated]
